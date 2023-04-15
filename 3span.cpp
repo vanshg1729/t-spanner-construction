@@ -74,6 +74,8 @@ int main(){
 		}
 	}
 
+	// PHASE 1: Forming the clusters
+
 	/* Add all edges for non adjacent nodes */
 	for(int i = 0; i < n; i++){
 		if(binary_search(sampled_nodes.begin(), sampled_nodes.end(), i))
@@ -112,14 +114,46 @@ int main(){
 
 		// insert all edges which have smaller weight
 		for(auto e : adjacency_list[i]){
-			if(!is_sampled[e.first] && !is_adjacent_node[e.first]){ // NOTE: try removing the adjacent condition
+			// if(!is_sampled[e.first] && !is_adjacent_node[e.first]){ // NOTE: try removing the adjacent condition
 				if(e.second < min_weight_to_sampled){
 					new_adjacency_list[i].push_back(e);
 					new_adjacency_list[e.first].push_back(make_pair(i, e.second));
 				}
-			}
+			// }
 		}
 	}
+
+	// TODO: Remove intercluster edges
+	
+	// Phase 2 : Joining vertices with their neighbouring clusters
+
+	for(int i = 0; i < n; i++){
+		if(!is_sampled[i] && !is_adjacent_node[i])
+			continue;
+		map<int,int> neighbour;
+		map<int,int> weight;
+		int mx = INT_MAX;
+		for(auto e : adjacency_list[i]){
+
+			// because non adjacent nodes are not part of any cluster
+			if(!is_sampled[e.first] && !is_adjacent_node[e.first])
+				continue;
+			
+			if(weight[parent[e.first]] < mx - e.second){
+				neighbour[parent[e.first]] = e.first;
+				weight[parent[e.first]] = mx - e.second;
+			}
+		}
+
+		for(auto p : weight){
+			int x = i;
+			int y = neighbour[p.first];
+			int w = mx - p.second;
+			new_adjacency_list[x].push_back(make_pair(y, w));
+			new_adjacency_list[y].push_back(make_pair(x, w));
+		}
+	}
+
 
 	/* close input file*/
 	input_file.close();
