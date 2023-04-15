@@ -17,10 +17,12 @@ bool choose(int n){
 	return false;
 }
 
-void choose_cluster_centers(int n, vector<int>& sampled_nodes){
+void choose_cluster_centers(int n, vector<bool>& is_sampled, vector<int>& sampled_nodes){
 	for(int i = 0; i < n; i++){
-		if(choose(n))
+		if(choose(n)){
 			sampled_nodes.push_back(i);
+			is_sampled[i] = true;
+		}
 	}
 }
 
@@ -53,20 +55,73 @@ int main(){
 	vector<vector<pair<int,int>>> new_adjacency_list(n, vector<pair<int,int>>());
 
 	vector<int> sampled_nodes;
-	choose_cluster_centers(n, sampled_nodes);
+	vector<bool> is_sampled(n, false);
+	choose_cluster_centers(n, is_sampled, sampled_nodes);
 	/* NOTE: sampled_nodes will be in sorted order of index */	
 
 	/* Find adjacent nodes to the cluster points*/
 	set<int> adjacent_nodes;
+	vector<bool> is_adjacent_node(n, false);
 	for(auto node : sampled_nodes){
 		for(auto e : adjacency_list[node]){
+
+			// Don't insert sampled nodes
+			if(binary_search(sampled_nodes.begin(), sampled_nodes.end(), e.first))
+				continue;
+			
 			adjacent_nodes.insert(e.first);
+			is_adjacent_node[e.first] = true;
 		}
 	}
 
-	for()
-	
+	/* Add all edges for non adjacent nodes */
+	for(int i = 0; i < n; i++){
+		if(binary_search(sampled_nodes.begin(), sampled_nodes.end(), i))
+			continue;
+		if(adjacent_nodes.find(i) != adjacent_nodes.end())
+			continue;
+		for(auto e : adjacency_list[i]){
+			new_adjacency_list[i].push_back(e);
+			new_adjacency_list[e.first].push_back(make_pair(i, e.second));
+		}
+	}
+
+	vector<int> parent(n, 0);
+	for(auto node : sampled_nodes){
+		parent[node] = node;
+	}
+	// VERY INEFFICIENT CODE COMING UP
+	for(auto i : adjacent_nodes){
+		
+		// get the edge that is the smallest to a sampled node
+		int min_weight_to_sampled = INT_MAX; // NOTE: Change accordingly
+		for(auto e : adjacency_list[i]){
+			if(is_sampled[e.first])
+				min_weight_to_sampled = min(min_weight_to_sampled, e.second);
+		}
+
+		// insert the min edge to a sampled node to the new graph
+		for(auto e : adjacency_list[i]){
+			if(is_sampled[e.first] && e.second == min_weight_to_sampled){
+				new_adjacency_list[i].push_back(e);
+				new_adjacency_list[e.first].push_back(make_pair(i, e.second));
+				parent[i] = e.first;
+				break;
+			}
+		}
+
+		// insert all edges which have smaller weight
+		for(auto e : adjacency_list[i]){
+			if(!is_sampled[e.first] && !is_adjacent_node[e.first]){ // NOTE: try removing the adjacent condition
+				if(e.second < min_weight_to_sampled){
+					new_adjacency_list[i].push_back(e);
+					new_adjacency_list[e.first].push_back(make_pair(i, e.second));
+				}
+			}
+		}
+	}
 
 	/* close input file*/
 	input_file.close();
 }
+
