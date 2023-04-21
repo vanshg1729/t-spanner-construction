@@ -27,6 +27,8 @@ int main() {
 
     int n, m; cin >> n >> m;
     int sqrt_n = sqrt(n);
+    int phase_one_edge_count = 0;
+    int phase_two_edge_count = 0;
 
     for (int i = 0; i < m; i++) {
         int u, v, w;
@@ -117,6 +119,8 @@ int main() {
         }
     }
 
+    phase_one_edge_count = spanner_edges.size();
+
     // Phase 2 : Cluster-Vertex joining
 
     for (int i = 1; i <= n; i++) {
@@ -135,6 +139,10 @@ int main() {
                 adj[v.fr].erase({i, v.sc});
                 smallest_edge[cluster_center] = u;
             }
+            else {
+                delete_edges.push_back(u);
+                adj[u.fr].erase({i, u.sc});
+            }
         }
 
         for (auto u : delete_edges) adj[i].erase(u);
@@ -148,10 +156,15 @@ int main() {
     }
 
     int total_edges = spanner_edges.size();
+    phase_two_edge_count = total_edges - phase_one_edge_count;
 
     cout << n << " " << total_edges << "\n";
 
     for (auto edge : spanner_edges) {
         cout << get<0>(edge) << " " << get<1>(edge) << " " << get<2>(edge) << "\n";
     }
+
+    cout << "Number of clusters: " << cluster_count << "\n";
+    cout << "Phase 1 edge count: " << phase_one_edge_count << "\n";
+    cout << "Phase 2 edge count: " << phase_two_edge_count << "\n";
 }
