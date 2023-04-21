@@ -91,7 +91,7 @@ int main() {
         cluster[i] = closest_cluster;
 
         for (auto u : adj[i]) {
-            if (u.sc < cluster_dist) {
+            if (u.sc <= cluster_dist) {
                 added_edges.push_back(u);
                 spanner_edges.push_back({i, u.fr, u.sc});
                 adj[u.fr].erase({i, u.sc});

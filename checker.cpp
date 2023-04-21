@@ -53,7 +53,7 @@ int main(){
     for(int i = 0; i < m; i++){
         int x, y, w;
         cin>>x>>y>>w;
-	x--;y--;
+        x--;y--;
         adj[x].push_back(make_pair(y, w));
         adj[y].push_back(make_pair(x, w));
     }
@@ -63,7 +63,7 @@ int main(){
     for(int i = 0; i < m2; i++){
         int x, y, w;
         cin>>x>>y>>w;
-	x--;y--;
+        x--;y--;
         adj2[x].push_back(make_pair(y, w));
         adj2[y].push_back(make_pair(x, w));
     }
@@ -75,7 +75,7 @@ int main(){
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
             if(dists2[i][j] > t * dists[i][j]){
-		cout<<i<<" "<<j<<" "<<dists[i][j]<<" "<<dists2[i][j]<<endl;
+		cout<<i + 1 <<" "<< j + 1 <<" "<<dists[i][j]<<" "<<dists2[i][j]<<endl;
                 ok = false;
                 break;
             }
