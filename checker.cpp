@@ -75,6 +75,7 @@ int main(){
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
             if(dists2[i][j] > t * dists[i][j]){
+		cout<<i<<" "<<j<<" "<<dists[i][j]<<" "<<dists2[i][j]<<endl;
                 ok = false;
                 break;
             }
