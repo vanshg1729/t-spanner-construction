@@ -10,6 +10,7 @@
 using namespace std;
 
 bool choose(int n){
+	// NOTE: assuming n is much smaller than INT_MAX
 	int threshold = sqrt(n);
 	if(rand()%n <= threshold){
 		return true;
@@ -151,6 +152,15 @@ int main(){
 			int w = mx - p.second;
 			new_adjacency_list[x].push_back(make_pair(y, w));
 			new_adjacency_list[y].push_back(make_pair(x, w));
+		}
+	}
+
+	ofstream output_file;
+	output_file.open("out.txt");
+	assert(output_file.is_open());
+	for(int i = 0; i < n; i++){
+		for(auto e : new_adjacency_list[i]){
+			output_file << i << " " << e.first << " " << e.second <<endl;
 		}
 	}
 
