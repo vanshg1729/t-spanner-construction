@@ -53,6 +53,7 @@ int main(){
     for(int i = 0; i < m; i++){
         int x, y, w;
         cin>>x>>y>>w;
+	x--;y--;
         adj[x].push_back(make_pair(y, w));
         adj[y].push_back(make_pair(x, w));
     }
@@ -62,6 +63,7 @@ int main(){
     for(int i = 0; i < m2; i++){
         int x, y, w;
         cin>>x>>y>>w;
+	x--;y--;
         adj2[x].push_back(make_pair(y, w));
         adj2[y].push_back(make_pair(x, w));
     }
@@ -78,7 +80,7 @@ int main(){
             }
         }
     }
-    for(auto v : dists){
+/*    for(auto v : dists){
         for(auto x : v){
             cout<<x<<" ";
         }
@@ -89,7 +91,7 @@ int main(){
             cout<<x<<" ";
         }
         cout<<endl;
-    }
+    }*/
     if(ok)
         cout<<"YES"<<endl;
     else
