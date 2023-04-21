@@ -26,6 +26,7 @@ int main() {
     vector<tuple<int, int, int>> spanner_edges = {};
 
     int n, m; cin >> n >> m;
+    int sqrt_n = sqrt(n);
 
     for (int i = 0; i < m; i++) {
         int u, v, w;
@@ -37,11 +38,17 @@ int main() {
     // Phase 1 : Cluster formation
 
     // choosing cluster center nodes randomly with (1/sqrt(n)) probability
-    for (int i = 1; i <= n; i++) {
-        if (choose_node(n)) {
-            cluster[i] = i;
-            cluster_count++;
-            cluster_centers.push_back(i);
+    while (cluster_count <= sqrt_n) {
+        for (int i = 1; i <= n; i++) {
+            if (cluster[i] == i) continue;
+            if (choose_node(n)) {
+                cluster[i] = i;
+                cluster_count++;
+                cluster_centers.push_back(i);
+                if (cluster_count > sqrt_n) {
+                    break;
+                }
+            }
         }
     }
 
