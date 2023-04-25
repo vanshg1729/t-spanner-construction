@@ -1,9 +1,5 @@
 # ./check.sh [n-value] [t-value] [cpp src name] [infile] [outfile]
 
-g++ dgg.cpp -o dgg.out
-./dgg.out $1 > $4
-rm ./dgg.out
-
 g++ $3 -o prog.out
 ./prog.out $2 < $4 > $5
 rm ./prog.out
