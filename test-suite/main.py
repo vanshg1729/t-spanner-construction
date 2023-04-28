@@ -18,18 +18,23 @@ def doTest(impl: str, generator: str, no_of_nodes: int, t_value: int):
     info['t_value'] = t_value
     dir_name = "./outputs/output-" + str(metadata['outputs']) + "/"
     os.system("mkdir " + dir_name)
+
+    impl_basename = os.path.basename(impl)
+    generator_basename = os.path.basename(generator)
+
     info_json = dir_name + "info.json"
-    impl_src = dir_name + impl
-    gen_src = dir_name + generator
+    impl_src = dir_name + impl_basename
+    gen_src = dir_name + generator_basename
     impl_bin = dir_name + "impl"
     gen_bin = dir_name + "generator"
     test_case = dir_name + "test-" + str(test_number) + ".txt"
     test_output = dir_name + "out-" + str(test_number) + ".txt"
     checker_input = dir_name + "checker-input-" + str(test_number) + ".txt"
+
     with tqdm.tqdm(total=70) as pbar:
-        os.system("cp " + impl + " " + dir_name)
+        os.system("cp " + impl + " " + impl_src)
         pbar.update(10)
-        os.system("cp " + generator + " " + dir_name)
+        os.system("cp " + generator + " " + gen_src)
         pbar.update(10)
         os.system("g++ " + impl_src + " -o " + impl_bin)
         pbar.update(10)
