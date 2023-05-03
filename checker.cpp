@@ -34,6 +34,35 @@ void dijkstra(int s, vector<int> & d, vector<int> & p, vector<vector<pair<int, i
     }
 }
 
+void floyd_warshall(int s, vector<vector<int>> & d, vector<vector<pair<int, int>>>& adj) {
+    int n = adj.size();
+    d.assign(n, vector<int>(n, INF));
+    for(int i = 0; i < n; i++){
+        for(auto next : adj[i]){
+            d[i][next.first] = next.second;
+            d[next.first][i] = next.second;
+            // cout<<next.second<<endl;
+        }
+    }
+    for (int k = 0; k < n; ++k) {
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (d[i][k] < INF && d[k][j] < INF)
+                    d[i][j] = min(d[i][j], d[i][k] + d[k][j]); 
+            }
+        }
+    }
+
+    // for(int i = 0; i < n; i++){
+    //     for(int j = 0; j < n; j++){
+    //         cout<<d[i][j]<<" ";
+    //     }
+    //     cout<<endl;
+    // }
+
+}
+
+
 void distances(vector<vector<pair<int, int>>>& adj, vector<vector<int>>& dists){
     int n = adj.size();
     for(int i = 0; i < n; i++){
@@ -42,12 +71,16 @@ void distances(vector<vector<pair<int, int>>>& adj, vector<vector<int>>& dists){
     }
 }
 
+void printJson(string a, string b){
+    cout<<"\""<<a<<"\":"<<"\""<<b<<"\",";
+}
 
 int main(){
     int t;
     cin>>t;
     int n, m;
     cin>>n>>m;
+    srand(time(0));
     vector<vector<pair<int,int>>> adj(n, vector<pair<int,int>>());
     
     for(int i = 0; i < m; i++){
@@ -69,11 +102,16 @@ int main(){
     }
     vector<vector<int>> dists(n, vector<int>());
     vector<vector<int>> dists2(n2, vector<int>());
-    distances(adj, dists);
-    distances(adj2, dists2);
+    // distances(adj, dists);
+    // distances(adj2, dists2);
+    floyd_warshall(0, dists, adj);
+    floyd_warshall(0, dists2, adj2);
+
     bool ok = true;
+    double spanner_score = 0;
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
+            spanner_score = max(spanner_score, ((double) dists2[i][j])/dists[i][j]);
             if(dists2[i][j] > t * dists[i][j]){
 		cout<<i + 1 <<" "<< j + 1 <<" "<<dists[i][j]<<" "<<dists2[i][j]<<endl;
                 ok = false;
@@ -93,9 +131,12 @@ int main(){
         }
         cout<<endl;
     }*/
+    cout<<"{\"status\":";
     if(ok)
-        cout<<"YES"<<endl;
+        cout<<"\"YES\",";
     else
-        cout<<"NO"<<endl;
+        cout<<"\"NO\",";
+    printJson("spanner_score", to_string(spanner_score));
+    cout<<"\"check\":"<<rand()<<"}"<<endl;
     return 0;
 }
