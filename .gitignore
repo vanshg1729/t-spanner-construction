@@ -1,4 +1,5 @@
 *.txt
 *.out
 outputs/output-*
+outputs/metadata.json
 .vscode
