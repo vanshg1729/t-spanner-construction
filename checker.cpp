@@ -100,6 +100,13 @@ int main(){
         adj2[x].push_back(make_pair(y, w));
         adj2[y].push_back(make_pair(x, w));
     }
+
+    int phase1_edge_count = 0, phase2_edge_count = 0;
+    double phase1_time = 0, phase2_time = 0, total_time = 0;
+
+    cin >> phase1_edge_count >> phase2_edge_count;
+    cin >> phase1_time >> phase2_time >> total_time;
+
     vector<vector<int>> dists(n, vector<int>());
     vector<vector<int>> dists2(n2, vector<int>());
     // distances(adj, dists);
@@ -137,6 +144,11 @@ int main(){
     else
         cout<<"\"NO\",";
     printJson("spanner_score", to_string(spanner_score));
+    printJson("phase1_edge_count", to_string(phase1_edge_count));
+    printJson("phase2_edge_count", to_string(phase2_edge_count));
+    printJson("phase1_time", to_string(phase1_time));
+    printJson("phase2_time", to_string(phase2_time));
+    printJson("total_time", to_string(total_time));
     cout<<"\"check\":"<<rand()<<"}"<<endl;
     return 0;
 }
