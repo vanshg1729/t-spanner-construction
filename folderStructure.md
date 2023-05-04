@@ -15,3 +15,8 @@
 		- generator.cpp
 - DebugLab/
 - bin/
+
+## Test suite
+- test different t values for graphs
+- test graphs with same t-value
+- test different graphs
