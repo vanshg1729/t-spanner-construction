@@ -8,7 +8,6 @@ import subprocess
 
 app = typer.Typer()
 
-
 @app.command()
 def doTest(impl: str, generator: str, no_of_nodes: int, t_value: int):
     with open("./outputs/metadata.json", "r") as f:
