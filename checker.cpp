@@ -113,7 +113,7 @@ int main(){
         for(int j = 0; j < n; j++){
             spanner_score = max(spanner_score, ((double) dists2[i][j])/dists[i][j]);
             if(dists2[i][j] > t * dists[i][j]){
-		cout<<i + 1 <<" "<< j + 1 <<" "<<dists[i][j]<<" "<<dists2[i][j]<<endl;
+		// cout<<i + 1 <<" "<< j + 1 <<" "<<dists[i][j]<<" "<<dists2[i][j]<<endl;
                 ok = false;
                 break;
             }
