@@ -127,6 +127,16 @@ def multiTest(impl: str, generator: str, no_of_nodes: int, t_value: int, no_of_t
         check_output_json = (json.loads(check_output.stdout))
         info[idx]['status'] = check_output_json['status']
         info[idx]['spanner_score'] = check_output_json['spanner_score']
+        info[idx]['n_value'] = no_of_nodes
+        info[idx]['test_case_number'] = idx
+        info[idx]['phase1_edge_count'] = check_output_json['phase1_edge_count']
+        info[idx]['phase2_edge_count'] = check_output_json['phase2_edge_count']
+        info[idx]['phase1_time'] = check_output_json['phase1_time']
+        info[idx]['phase2_time'] = check_output_json['phase2_time']
+        info[idx]['total_time'] = check_output_json['total_time']
+        info[idx]['total_edges'] =  check_output_json['total_edges']
+        info[idx]['original_edges'] =  check_output_json['original_edges']
+        info[idx]['t_value'] = t_value
     
     metadata['outputs'] += 1
     with open('./outputs/metadata.json', 'w') as f:
@@ -203,9 +213,17 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int):
             # print(check_output.stdout)
             check_output_json = (json.loads(check_output.stdout))
             info[i * no_of_tests + idx]['status'] = check_output_json['status']
-            info[i* no_of_tests + idx]['spanner_score'] = check_output_json['spanner_score']
-            info[i* no_of_tests + idx]['t_values'] = t_value
-            info[i* no_of_tests + idx]['test_case_number'] = idx
+            info[i * no_of_tests + idx]['spanner_score'] = check_output_json['spanner_score']
+            info[i * no_of_tests + idx]['n_value'] = no_of_nodes
+            info[i * no_of_tests + idx]['test_case_number'] = idx
+            info[i * no_of_tests + idx]['phase1_edge_count'] = check_output_json['phase1_edge_count']
+            info[i * no_of_tests + idx]['phase2_edge_count'] = check_output_json['phase2_edge_count']
+            info[i * no_of_tests + idx]['phase1_time'] = check_output_json['phase1_time']
+            info[i * no_of_tests + idx]['phase2_time'] = check_output_json['phase2_time']
+            info[i * no_of_tests + idx]['total_time'] = check_output_json['total_time']
+            info[i * no_of_tests + idx]['total_edges'] =  check_output_json['total_edges']
+            info[i * no_of_tests + idx]['original_edges'] =  check_output_json['original_edges']
+            info[i * no_of_tests + idx]['t_value'] = t_value
         i += 1
 
     metadata['outputs'] += 1
@@ -287,9 +305,18 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=0, n
             # print(check_output.stdout)
             check_output_json = (json.loads(check_output.stdout))
             info[i * no_of_tests + idx]['status'] = check_output_json['status']
-            info[i* no_of_tests + idx]['spanner_score'] = check_output_json['spanner_score']
-            info[i* no_of_tests + idx]['n_value'] = no_of_nodes
-            info[i* no_of_tests + idx]['test_case_number'] = idx
+            info[i * no_of_tests + idx]['spanner_score'] = check_output_json['spanner_score']
+            info[i * no_of_tests + idx]['n_value'] = no_of_nodes
+            info[i * no_of_tests + idx]['test_case_number'] = idx
+            info[i * no_of_tests + idx]['phase1_edge_count'] = check_output_json['phase1_edge_count']
+            info[i * no_of_tests + idx]['phase2_edge_count'] = check_output_json['phase2_edge_count']
+            info[i * no_of_tests + idx]['phase1_time'] = check_output_json['phase1_time']
+            info[i * no_of_tests + idx]['phase2_time'] = check_output_json['phase2_time']
+            info[i * no_of_tests + idx]['total_time'] = check_output_json['total_time']
+            info[i * no_of_tests + idx]['total_edges'] =  check_output_json['total_edges']
+            info[i * no_of_tests + idx]['original_edges'] =  check_output_json['original_edges']
+            info[i * no_of_tests + idx]['t_value'] = t_value
+
         i += 1
 
     metadata['outputs'] += 1

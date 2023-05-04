@@ -149,6 +149,8 @@ int main(){
     printJson("phase1_time", to_string(phase1_time));
     printJson("phase2_time", to_string(phase2_time));
     printJson("total_time", to_string(total_time));
+    printJson("total_edges", to_string(m2));
+    printJson("original_edges", to_string(m));
     cout<<"\"check\":"<<rand()<<"}"<<endl;
     return 0;
 }
