@@ -204,7 +204,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int):
             test_output = dir_name + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
             checker_input = dir_name + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
             
-            print("Checking for k: #", t_value, flush=True)
+            print("Checking for t: ", t_value, " idx: ", idx, flush=True)
             os.system("echo " + str(t_value) + " > " + checker_input)
             os.system("cat " + test_case + " >> " + checker_input)
             os.system("cat " + test_output + " >> " + checker_input)
