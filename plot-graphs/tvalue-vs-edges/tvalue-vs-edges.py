@@ -20,7 +20,13 @@ for key, value in no_of_edges.items():
     no_of_edges[key] = value/tests_per_t
 
 fig, ax = plt.subplots()
+expected_edges = [pow(n_value, 1 + 1/((t_value + 1)/2)) for t_value in no_of_edges.keys()]
+
+ax.plot(no_of_edges.keys(), no_of_edges.values(), label='Number of Spanner Edges')
+ax.plot(no_of_edges.keys(), expected_edges, label='Expected Number of edges')
 ax.set_title(f"T value vs Number of Spanner edges for {n_value} node graphs")
 ax.set_xlabel("T value")
 ax.set_ylabel("Number of edges in spanner graph")
+ax.legend()
+
 plt.show()
