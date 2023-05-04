@@ -5,6 +5,7 @@ int main(int argc, char** argv){
 	int n = atoi(argv[1]); // dum dum
 	srand(time(0));
 	std::default_random_engine generator;
+	generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
 	std::normal_distribution<double> distribution(100.0, 100.0);
 	vector<vector<pair<int,int>>> adj(n, vector<pair<int,int>>());
 	int edges= 0;

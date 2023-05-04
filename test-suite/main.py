@@ -65,6 +65,76 @@ def doTest(impl: str, generator: str, no_of_nodes: int, t_value: int):
     print(json.dumps(info, indent=4))
 
 @app.command()
+def multiTest(impl: str, generator: str, no_of_nodes: int, t_value: int, no_of_tests: int):
+    with open("./outputs/metadata.json", "r") as f:
+        metadata = json.load(f)
+    test_number = metadata['outputs']
+    info = {}
+    info['n_value'] = no_of_nodes
+    info['t_value'] = t_value
+    info['no_of_tests'] = no_of_tests
+    dir_name = "./outputs/output-" + str(metadata['outputs']) + "/"
+    os.system("mkdir " + dir_name)
+
+    impl_basename = os.path.basename(impl)
+    generator_basename = os.path.basename(generator)
+
+    info_json = dir_name + "info.json"
+    impl_src = dir_name + impl_basename
+    gen_src = dir_name + generator_basename
+    impl_bin = dir_name + "impl.out"
+    gen_bin = dir_name + "generator.out"
+
+    os.system("cp " + impl + " " + impl_src)
+    os.system("cp " + generator + " " + gen_src)
+    os.system("g++ " + impl_src + " -o " + impl_bin)
+    os.system("g++ " + gen_src + " -o " + gen_bin)
+    os.system("g++ checker.cpp -o check")
+
+    print("Generating tests ... ")
+    for idx in range(no_of_tests):
+        print("Generating test: #", idx, flush=True)
+        test_case = dir_name + "test-" + str(test_number) + '-' + str(idx) + ".txt"
+        test_output = dir_name + "out-" + str(test_number) + '-' + str(idx) + ".txt"
+        checker_input = dir_name + "checker-input-" + str(test_number) + '-' + str(idx) + ".txt"
+        os.system(gen_bin + " " + str(no_of_nodes) + " > " + test_case)
+    
+    print()
+    
+    for idx in range(no_of_tests):
+        print("Running t-spanner on test: #", idx, flush=True)
+        test_case = dir_name + "test-" + str(test_number) + '-' + str(idx) + ".txt"
+        test_output = dir_name + "out-" + str(test_number) + '-' + str(idx) + ".txt"
+        checker_input = dir_name + "checker-input-" + str(test_number) + '-' + str(idx) + ".txt"
+        os.system(impl_bin + " " + str(t_value) + " < " + test_case + " > " + test_output)
+
+    print()
+    
+    for idx in range(no_of_tests):
+        print("Checking test: #", idx, flush=True)
+        test_case = dir_name + "test-" + str(test_number) + '-' + str(idx) + ".txt"
+        test_output = dir_name + "out-" + str(test_number) + '-' + str(idx) + ".txt"
+        checker_input = dir_name + "checker-input-" + str(test_number) + '-' + str(idx) + ".txt"
+        os.system("echo " + str(t_value) + " > " + checker_input)
+        os.system("cat " + test_case + " >> " + checker_input)
+        os.system("cat " + test_output + " >> " + checker_input)
+        os.system("./check < " + checker_input)
+        check_output = subprocess.run("./check < " + checker_input, shell=True, capture_output=True, text=True)
+        # print(check_output.stdout)
+        check_output_json = (json.loads(check_output.stdout))
+        info['status_' + str(idx)] = check_output_json['status']
+        info['spanner_score_' + str(idx)] = check_output_json['spanner_score']
+    
+    metadata['outputs'] += 1
+    with open('./outputs/metadata.json', 'w') as f:
+        json.dump(metadata, f)  
+    with open(info_json, 'w') as f:
+        json.dump(info, f)
+    
+    print(json.dumps(info, indent=4))
+
+
+@app.command()
 def hello(name: str):
     print(f"Hello {name}")
 
