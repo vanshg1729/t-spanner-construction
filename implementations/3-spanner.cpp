@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <chrono>
 using namespace std;
 
 #define fr first
@@ -18,6 +19,12 @@ int choose_node(int n) {
 }
 
 int main() {
+
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    using std::chrono::milliseconds;
+
     set<pii> adj[maxn] = {};
     int cluster[maxn + 10] = {}; // tells the cluster to which node i belongs to
     vector<int> cluster_centers = {};
@@ -37,6 +44,7 @@ int main() {
         adj[v].insert({u, w});
     }
 
+    auto phase1_start = high_resolution_clock::now();
     // Phase 1 : Cluster formation
 
     // choosing cluster center nodes randomly with (1/sqrt(n)) probability
@@ -119,10 +127,12 @@ int main() {
         }
     }
 
+    auto phase1_end = high_resolution_clock::now();
     phase_one_edge_count = spanner_edges.size();
 
     // Phase 2 : Cluster-Vertex joining
 
+    auto phase2_start = high_resolution_clock::now();
     for (int i = 1; i <= n; i++) {
         // smallest edge from i to all the clusters
         vector<pii> smallest_edge(n + 10, {0, INF});
@@ -154,6 +164,7 @@ int main() {
 
         adj[i].clear(); // removing all the edges added to spanner graph
     }
+    auto phase2_end = high_resolution_clock::now();
 
     int total_edges = spanner_edges.size();
     phase_two_edge_count = total_edges - phase_one_edge_count;
@@ -164,7 +175,18 @@ int main() {
         cout << get<0>(edge) << " " << get<1>(edge) << " " << get<2>(edge) << "\n";
     }
 
+    duration<double, std::milli> phase1_time = phase1_end - phase1_start;
+    duration<double, std::milli> phase2_time = phase2_end - phase2_start;
+    duration<double, std::milli> total_time = phase1_time + phase2_time;
+
+    cout << phase_one_edge_count << "\n";
+    cout << phase_two_edge_count << "\n";
+    cout << phase1_time.count() << "\n";
+    cout << phase2_time.count() << "\n";
+    cout << total_time.count() << "\n";
+    /*
     cout << "Number of clusters: " << cluster_count << "\n";
     cout << "Phase 1 edge count: " << phase_one_edge_count << "\n";
     cout << "Phase 2 edge count: " << phase_two_edge_count << "\n";
+    */
 }

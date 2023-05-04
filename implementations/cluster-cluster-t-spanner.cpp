@@ -30,6 +30,11 @@ int choose_node(int n, int k) {
 
 int main(int argc, char *argv[]) {
 
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    using std::chrono::milliseconds;
+
     int k = 3; // t-value for t-spanner
     if (argc > 1) {
         k = atoi(argv[1]);
@@ -43,6 +48,8 @@ int main(int argc, char *argv[]) {
     vector<int> cluster_centers[2] = {};
     vector<tuple<int, int, int>> cluster_edges[2] = {};
     int cluster_count = 0;
+    int phase_one_edge_count = 0;
+    int phase_two_edge_count = 0;
 
     // all edges of E' that belong to the ith cluster
     // will be used in Phase 2: Cluster-Cluster joining
@@ -59,6 +66,7 @@ int main(int argc, char *argv[]) {
         adj[v].insert({u, w});
     }
 
+    auto phase1_start = high_resolution_clock::now();
     // Phase 1: Cluster formation
 
     // initializing C_0
@@ -267,8 +275,11 @@ int main(int argc, char *argv[]) {
     }
     
     // End of Phase 1
+    auto phase1_end = high_resolution_clock::now();
+    phase_one_edge_count = spanner_edges.size();
     
     // Start of Phase 2: Cluster-Cluster joining
+    auto phase2_start = high_resolution_clock::now();
 
     // C_{k/2} - clusters at end of k/2 th iteration
     // C_{k/2 - 1} - clusters at end of k/2 - 1 th iteration
@@ -341,13 +352,26 @@ int main(int argc, char *argv[]) {
     }
 
     // End of Phase 2
+    auto phase2_end = high_resolution_clock::now();
+
+    int total_edges = spanner_edges.size();
+    phase_two_edge_count = total_edges - phase_one_edge_count;
     
     // Printing the Final spanner graph
 
-    int total_edges = spanner_edges.size();
     cout << n << " " << total_edges << "\n";
 
     for (auto edge : spanner_edges) {
         cout << get<0>(edge) << " " << get<1>(edge) << " " << get<2>(edge) << "\n";
     }
+
+    duration<double, std::milli> phase1_time = phase1_end - phase1_start;
+    duration<double, std::milli> phase2_time = phase2_end - phase2_start;
+    duration<double, std::milli> total_time = phase1_time + phase2_time;
+
+    cout << phase_one_edge_count << "\n";
+    cout << phase_two_edge_count << "\n";
+    cout << phase1_time.count() << "\n";
+    cout << phase2_time.count() << "\n";
+    cout << total_time.count() << "\n";
 }
