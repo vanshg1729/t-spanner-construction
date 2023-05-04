@@ -61,7 +61,7 @@ def doTest(impl: str, generator: str, no_of_nodes: int, t_value: int):
     with open('./outputs/metadata.json', 'w') as f:
         json.dump(metadata, f)  
     with open(info_json, 'w') as f:
-        json.dump(info, f)
+        json.dump(info, f, indent=4)
     
     print(json.dumps(info, indent=4))
 
@@ -142,7 +142,7 @@ def multiTest(impl: str, generator: str, no_of_nodes: int, t_value: int, no_of_t
     with open('./outputs/metadata.json', 'w') as f:
         json.dump(metadata, f)  
     with open(info_json, 'w') as f:
-        json.dump(info, f)
+        json.dump(info, f, indent=4)
     
     print(json.dumps(info, indent=4))
 
@@ -230,7 +230,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int):
     with open('./outputs/metadata.json', 'w') as f:
         json.dump(metadata, f)  
     with open(info_json, 'w') as f:
-        json.dump(info, f)
+        json.dump(info, f, indent=4)
     
     print(json.dumps(info, indent=4))
 
@@ -325,7 +325,7 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=0, n
     with open('./outputs/metadata.json', 'w') as f:
         json.dump(metadata, f)  
     with open(info_json, 'w') as f:
-        json.dump(info, f)
+        json.dump(info, f, indent=4)
     
     print(json.dumps(info, indent=4))
 
