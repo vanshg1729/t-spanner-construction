@@ -3,6 +3,7 @@ import os
 import json
 # import timer
 import tqdm
+import subprocess
 
 
 app = typer.Typer()
@@ -25,8 +26,8 @@ def doTest(impl: str, generator: str, no_of_nodes: int, t_value: int):
     info_json = dir_name + "info.json"
     impl_src = dir_name + impl_basename
     gen_src = dir_name + generator_basename
-    impl_bin = dir_name + "impl"
-    gen_bin = dir_name + "generator"
+    impl_bin = dir_name + "impl.out"
+    gen_bin = dir_name + "generator.out"
     test_case = dir_name + "test-" + str(test_number) + ".txt"
     test_output = dir_name + "out-" + str(test_number) + ".txt"
     checker_input = dir_name + "checker-input-" + str(test_number) + ".txt"
@@ -49,12 +50,19 @@ def doTest(impl: str, generator: str, no_of_nodes: int, t_value: int):
         os.system("cat " + test_output + " >> " + checker_input)
         os.system("g++ checker.cpp -o check")
         os.system("./check < " + checker_input)
+        check_output = subprocess.run("./check < " + checker_input, shell=True, capture_output=True, text=True)
         pbar.update(10)
+        # print(check_output.stdout)
+        check_output_json = (json.loads(check_output.stdout))
+    info['status'] = check_output_json['status']
+    info['spanner_score'] = check_output_json['spanner_score']
     metadata['outputs'] += 1
     with open('./outputs/metadata.json', 'w') as f:
         json.dump(metadata, f)  
     with open(info_json, 'w') as f:
         json.dump(info, f)
+    
+    print(json.dumps(info, indent=4))
 
 @app.command()
 def hello(name: str):
