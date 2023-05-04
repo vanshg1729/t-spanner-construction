@@ -147,16 +147,18 @@ def multiTest(impl: str, generator: str, no_of_nodes: int, t_value: int, no_of_t
     print(json.dumps(info, indent=4))
 
 @app.command()
-def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, nstart=0, nend=100, ninc=10):
+def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, nstart=3, nend=100, ninc=10):
     nstart = max(3, int(nstart))
     nend = int(nend)
     ninc = int(ninc)
-    t_values = [ i for i  in range(nstart, nend+1, ninc)]
+    t_values = [ i for i  in range(nstart, nend+nstart+1, ninc)]
     with open("./outputs/metadata.json", "r") as f:
         metadata = json.load(f)
     test_number = metadata['outputs']
     info = {}
     info['cmd'] = 'cross_t_test'
+    info['impl'] = impl
+    info['generator'] = generator
     info['n_value'] = no_of_nodes
     # info['t_value'] = t_value
     info['no_of_tests'] = len(t_values) * no_of_tests
@@ -230,6 +232,10 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, nstart=
         i += 1
 
     metadata['outputs'] += 1
+
+    os.system('rm ' + dir_name + 'out-*')
+    os.system('rm ' + dir_name + 'checker-input-*')
+
     with open('./outputs/metadata.json', 'w') as f:
         json.dump(metadata, f)  
     with open(info_json, 'w') as f:
