@@ -8,7 +8,6 @@ import subprocess
 
 app = typer.Typer()
 
-
 @app.command()
 def doTest(impl: str, generator: str, no_of_nodes: int, t_value: int):
     with open("./outputs/metadata.json", "r") as f:
@@ -147,13 +146,18 @@ def multiTest(impl: str, generator: str, no_of_nodes: int, t_value: int, no_of_t
     print(json.dumps(info, indent=4))
 
 @app.command()
-def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int):
-    t_values = [ 3 + i for i  in range(0, 1001, 50)]
+def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, nstart=3, nend=100, ninc=10):
+    nstart = max(3, int(nstart))
+    nend = int(nend)
+    ninc = int(ninc)
+    t_values = [ i for i  in range(nstart, nend+nstart+1, ninc)]
     with open("./outputs/metadata.json", "r") as f:
         metadata = json.load(f)
     test_number = metadata['outputs']
     info = {}
     info['cmd'] = 'cross_t_test'
+    info['impl'] = impl
+    info['generator'] = generator
     info['n_value'] = no_of_nodes
     # info['t_value'] = t_value
     info['no_of_tests'] = len(t_values) * no_of_tests
@@ -204,7 +208,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int):
             test_output = dir_name + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
             checker_input = dir_name + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
             
-            print("Checking for k: #", t_value, flush=True)
+            print("Checking for t: ", t_value, " idx: ", idx, flush=True)
             os.system("echo " + str(t_value) + " > " + checker_input)
             os.system("cat " + test_case + " >> " + checker_input)
             os.system("cat " + test_output + " >> " + checker_input)
@@ -227,6 +231,10 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int):
         i += 1
 
     metadata['outputs'] += 1
+
+    os.system('rm ' + dir_name + 'out-*')
+    os.system('rm ' + dir_name + 'checker-input-*')
+
     with open('./outputs/metadata.json', 'w') as f:
         json.dump(metadata, f)  
     with open(info_json, 'w') as f:
@@ -235,11 +243,11 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int):
     print(json.dumps(info, indent=4))
 
 @app.command()
-def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=0, nend=100, ninc=10):
-    nstart = int(nstart)
+def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, nend=100, ninc=10):
+    nstart = max(3, int(nstart))
     nend = int(nend)
     ninc = int(ninc)
-    n_values = [ 3 + i for i  in range(nstart, nend, ninc)]
+    n_values = [ i for i  in range(nstart, nend+1, ninc)]
     with open("./outputs/metadata.json", "r") as f:
         metadata = json.load(f)
     test_number = metadata['outputs']
