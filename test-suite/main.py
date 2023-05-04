@@ -4,15 +4,19 @@ import json
 # import timer
 import tqdm
 import subprocess
+import time
+import math
 
 
 app = typer.Typer()
+
+start_time = 1683228252
 
 @app.command()
 def doTest(impl: str, generator: str, no_of_nodes: int, t_value: int):
     with open("./outputs/metadata.json", "r") as f:
         metadata = json.load(f)
-    test_number = metadata['outputs']
+    test_number = math.floor(time.time()) - start_time
     info = {}
     info['cmd'] = 'dotest'
     info['n_value'] = no_of_nodes
@@ -68,7 +72,7 @@ def doTest(impl: str, generator: str, no_of_nodes: int, t_value: int):
 def multiTest(impl: str, generator: str, no_of_nodes: int, t_value: int, no_of_tests: int):
     with open("./outputs/metadata.json", "r") as f:
         metadata = json.load(f)
-    test_number = metadata['outputs']
+    test_number = math.floor(time.time()) - start_time
     info = {}
     info['cmd'] = 'mutitest'
     info['n_value'] = no_of_nodes
@@ -153,7 +157,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, nstart=
     t_values = [ i for i  in range(nstart, nend+nstart+1, ninc)]
     with open("./outputs/metadata.json", "r") as f:
         metadata = json.load(f)
-    test_number = metadata['outputs']
+    test_number = math.floor(time.time()) - start_time
     info = {}
     info['test_number'] = test_number
     info['cmd'] = 'cross_t_test'
@@ -251,7 +255,7 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
     n_values = [ i for i  in range(nstart, nend+1, ninc)]
     with open("./outputs/metadata.json", "r") as f:
         metadata = json.load(f)
-    test_number = metadata['outputs']
+    test_number = math.floor(time.time()) - start_time
     info = {}
     info['cmd'] = 'cross_n_test'
     # info['n_value'] = no_of_nodes
