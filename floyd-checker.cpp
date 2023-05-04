@@ -111,12 +111,11 @@ int main(){
     vector<vector<int>> dists2(n2, vector<int>());
     // distances(adj, dists);
     // distances(adj2, dists2);
-    //floyd_warshall(0, dists, adj);
-    //floyd_warshall(0, dists2, adj2);
+    floyd_warshall(0, dists, adj);
+    floyd_warshall(0, dists2, adj2);
 
     bool ok = true;
     double spanner_score = 0;
-    /*
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
             spanner_score = max(spanner_score, ((double) dists2[i][j])/dists[i][j]);
@@ -127,7 +126,6 @@ int main(){
             }
         }
     }
-    */
 /*    for(auto v : dists){
         for(auto x : v){
             cout<<x<<" ";
