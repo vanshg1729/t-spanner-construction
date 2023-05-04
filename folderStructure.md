@@ -17,6 +17,8 @@
 - bin/
 
 ## Test suite
-- test different t values for graphs
-- test graphs with same t-value
-- test different graphs
+- Multitest for same n and t (done)
+- Multitest for same n but different t (to plot number of spanner-edges vs
+t) - one for cluster-cluster, one for original
+- Multitest with same t but different n (to plot time complexity of
+t-spanner)
