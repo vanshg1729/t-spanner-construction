@@ -169,7 +169,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     info['tests_per_t'] = no_of_tests
     # no_of_tests = len(t_values)
     info['t_values'] = str(t_values)
-    dir_name = "./outputs/output-" + str(metadata['outputs']) + "/"
+    dir_name = "./outputs/output-" + str(test_number) + "/"
     os.system("mkdir " + dir_name)
 
     impl_basename = os.path.basename(impl)
@@ -185,7 +185,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     os.system("cp " + generator + " " + gen_src)
     os.system("g++ " + impl_src + " -o " + impl_bin)
     os.system("g++ " + gen_src + " -o " + gen_bin)
-    os.system("g++ checker.cpp -o check")
+    os.system("g++ checker.cpp -o check.out")
 
     print("Generating tests ... ")
     for idx in range(no_of_tests):
@@ -217,8 +217,8 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
             os.system("echo " + str(t_value) + " > " + checker_input)
             os.system("cat " + test_case + " >> " + checker_input)
             os.system("cat " + test_output + " >> " + checker_input)
-            os.system("./check < " + checker_input)
-            check_output = subprocess.run("./check < " + checker_input, shell=True, capture_output=True, text=True)
+            # os.system("./check.out < " + checker_input)
+            check_output = subprocess.run("./check.out < " + checker_input, shell=True, capture_output=True, text=True)
             # print(check_output.stdout)
             check_output_json = (json.loads(check_output.stdout))
             info[i * no_of_tests + idx]['status'] = check_output_json['status']
@@ -235,13 +235,10 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
             info[i * no_of_tests + idx]['t_value'] = t_value
         i += 1
 
-    metadata['outputs'] += 1
-
     os.system('rm ' + dir_name + 'out-*')
     os.system('rm ' + dir_name + 'checker-input-*')
 
-    with open('./outputs/metadata.json', 'w') as f:
-        json.dump(metadata, f)  
+ 
     with open(info_json, 'w') as f:
         json.dump(info, f, indent=4)
     
@@ -253,8 +250,6 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
     nend = int(nend)
     ninc = int(ninc)
     n_values = [ i for i  in range(nstart, nend+1, ninc)]
-    with open("./outputs/metadata.json", "r") as f:
-        metadata = json.load(f)
     test_number = math.floor(time.time()) - start_time
     info = {}
     info['cmd'] = 'cross_n_test'
@@ -267,7 +262,7 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
     info['tests_per_n'] = no_of_tests
     # no_of_tests = len(t_values)
     info['n_values'] = str(n_values)
-    dir_name = "./outputs/output-" + str(metadata['outputs']) + "/"
+    dir_name = "./outputs/output-" + str(test_number) + "/"
     os.system("mkdir " + dir_name)
 
     impl_basename = os.path.basename(impl)
@@ -335,11 +330,8 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
 
         i += 1
 
-    metadata['outputs'] += 1
     os.system('rm ' + dir_name + 'out-*')
     os.system('rm ' + dir_name + 'checker-input-*')
-    with open('./outputs/metadata.json', 'w') as f:
-        json.dump(metadata, f)  
     with open(info_json, 'w') as f:
         json.dump(info, f, indent=4)
     
