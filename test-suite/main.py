@@ -358,7 +358,7 @@ def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=10
     dataset_basename = os.path.basename(dataset_path)
     output_dir = dir_name + "out" + "/"
     checker_dir = dir_name + "check" + "/"
-    test_dataset_path = dir_name + dataset_basename + "/"
+    test_dataset_path = dir_name + "dataset" + "/"
     os.system("mkdir " + dir_name)
     os.system(f"mkdir {test_dataset_path}")
     os.system(f"mkdir {output_dir}")
@@ -389,9 +389,10 @@ def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=10
     info['tests_per_t'] = no_of_tests
 
     # generating the output for all the input testcases
-    for t_value in t_values:
+    for i, t_value in enumerate(t_values):
         for idx, filepath in enumerate(testcase_filepaths):
-            print(f"Running with t = {t_value}, n = {no_of_nodes}, test: #{idx}, path = {filepath}", flush=True)
+            test_num = i * no_of_tests + idx + 1
+            print(f"Running test: #{test_num} with t = {t_value}, n = {no_of_nodes}, testcase: #{idx}, path = {filepath}", flush=True)
             in_path = test_dataset_path + filepath
             out_path = output_dir + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
             os.system(impl_bin + " " + str(t_value) + " < " + in_path + " > " + out_path)
