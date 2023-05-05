@@ -1,0 +1,24 @@
+{
+    "cmd": "cross_n_test",
+    "test_number": 49587,
+    "impl": "implementations/t-spanner.cpp",
+    "generator": "dgg.cpp",
+    "t_value": 3,
+    "no_of_tests": 1,
+    "tests_per_n": 1,
+    "n_values": "[10000]",
+    "0": {
+        "status": "YES",
+        "spanner_score": "0.000000",
+        "n_value": 10000,
+        "test_case_number": 0,
+        "phase1_edge_count": "362336",
+        "phase2_edge_count": "179419",
+        "phase1_time": "80516.900000",
+        "phase2_time": "58612.800000",
+        "total_time": "139130.000000",
+        "total_edges": "541755",
+        "original_edges": "41941064",
+        "t_value": 3
+    }
+}
