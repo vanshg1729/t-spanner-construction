@@ -151,6 +151,7 @@ int main(){
     printJson("total_time", to_string(total_time));
     printJson("total_edges", to_string(m2));
     printJson("original_edges", to_string(m));
+    printJson("no_of_nodes", to_string(n));
     cout<<"\"check\":"<<rand()<<"}"<<endl;
     return 0;
 }
