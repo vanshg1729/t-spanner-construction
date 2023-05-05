@@ -336,7 +336,7 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
     print(json.dumps(info, indent=4))
 
 @app.command()
-def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, no_of_tests: int, tstart=3, tend=100, tinc=10):
+def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=100, tinc=10):
     tstart = max(3, int(tstart))
     tend = int(tend)
     tinc = int(tinc)
@@ -349,8 +349,6 @@ def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, no_of_tests: int,
     info['impl'] = impl
     info['dataset_path'] = dataset_path
     info['n_value'] = no_of_nodes
-    info['no_of_tests'] = len(t_values) * no_of_tests
-    info['tests_per_t'] = no_of_tests
     info['t_values'] = str(t_values)
 
     if dataset_path[-1] != '/':
@@ -362,8 +360,8 @@ def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, no_of_tests: int,
     checker_dir = dir_name + "check" + "/"
     test_dataset_path = dir_name + dataset_basename + "/"
     os.system("mkdir " + dir_name)
-    os.system(f"makdir {test_dataset_path}")
-    os.system(f"makedir {output_dir}")
+    os.system(f"mkdir {test_dataset_path}")
+    os.system(f"mkdir {output_dir}")
     os.system(f"mkdir {checker_dir}")
 
     # copying all the testcases from dataset directory to output directory
@@ -385,6 +383,10 @@ def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, no_of_tests: int,
     for filepath in os.listdir(test_dataset_path):
         if filepath.endswith(".txt"):
             testcase_filepaths.append(filepath)
+
+    no_of_tests = len(testcase_filepaths)
+    info['no_of_tests'] = len(t_values) * no_of_tests
+    info['tests_per_t'] = no_of_tests
 
     # generating the output for all the input testcases
     for t_value in t_values:
