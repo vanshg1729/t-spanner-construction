@@ -5,7 +5,11 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 
-def expected_spanner_edges(n, t_value:int):
+def lower_bound_spanner_edges(n, t_value:int):
+    k_value = (t_value + 1)/2
+    return pow(n, 1 + 1/k_value)
+
+def upper_bound_spanner_edges(n, t_value:int):
     k_value = (t_value + 1)/2
     return k_value * pow(n, 1 + 1/k_value)
 
@@ -20,9 +24,11 @@ def plot_expected_tvalue_vs_edges(ax, data):
         max_t_value = max(t_value, max_t_value)
 
     t_values = list(range(3, max_t_value + 1, 1))
-    expected_edges = [expected_spanner_edges(n_value, t_value) for t_value in t_values]
+    lower_bound = [lower_bound_spanner_edges(n_value, t_value) for t_value in t_values]
+    upper_bound = [upper_bound_spanner_edges(n_value, t_value) for t_value in t_values]
 
-    ax.plot(t_values, expected_edges, label='Expected Number of edges')
+    ax.plot(t_values, lower_bound, label='Lower bound of Spanner Edges')
+    ax.plot(t_values, upper_bound, label='Upper bound of Spanner Edges')
 
 
 def plot_tvalue_vs_edges(ax, path):
@@ -63,7 +69,7 @@ data = {}
 for path in paths:
     data = plot_tvalue_vs_edges(ax, path)
 
-#plot_expected_tvalue_vs_edges(ax, data)
+plot_expected_tvalue_vs_edges(ax, data)
 n_value = int(data['n_value'])
 
 ax.set_title(f"T value vs Number of Spanner edges for {n_value} node graphs")

@@ -13,6 +13,26 @@ app = typer.Typer()
 start_time = 1683228252
 
 @app.command()
+def create_dataset(generator: str, no_of_nodes: int, no_of_tests: int):
+    dataset_num = math.floor(time.time()) - start_time
+    dir_name = "./datasets/dataset-" + str(dataset_num) + "/"
+    os.system(f"mkdir {dir_name}")
+    generator_basename = os.path.basename(generator)
+
+    gen_src = dir_name + generator_basename
+    gen_bin = dir_name + "generator.out"
+    os.system("cp " + generator + " " + gen_src)
+    os.system("g++ " + gen_src + " -o " + gen_bin)
+
+    print(f"Generating tests in {dir_name}")
+    for idx in range(no_of_tests):
+        test_case = dir_name + "test-" + str(idx) + ".txt"
+        print(f"Generating test: #{idx + 1}/{no_of_tests} at {test_case}", flush=True)
+        os.system(gen_bin + " " + str(no_of_nodes) + " > " + test_case)
+
+    print(f"Written all testcases to {dir_name}")
+
+@app.command()
 def doTest(impl: str, generator: str, no_of_nodes: int, t_value: int):
     with open("./outputs/metadata.json", "r") as f:
         metadata = json.load(f)
