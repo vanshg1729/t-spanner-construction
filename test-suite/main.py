@@ -438,6 +438,102 @@ def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=10
     print(json.dumps(info, indent=4))
 
 @app.command()
+def ntestdata(impl: str, dataset_dir: str, t_value: int):
+    # n_values = [ i for i  in range(nstart, nend+1, ninc)]
+    test_number = math.floor(time.time()) - start_time
+    info = {}
+    info['cmd'] = 'ntestdata'
+    # info['n_value'] = no_of_nodes
+    info['test_number'] = test_number
+    info['impl'] = impl
+    # info['generator'] = generator
+    info['t_value'] = t_value
+    # info['tests_per_n'] = no_of_tests
+    # no_of_tests = len(t_values)
+    # info['n_values'] = str(n_values)
+    dir_name = "./outputs/output-" + str(test_number) + "/"
+    os.system("mkdir " + dir_name)
+
+    impl_basename = os.path.basename(impl)
+    # generator_basename = os.path.basename(generator)
+
+    info_json = dir_name + "info.json"
+    impl_src = dir_name + impl_basename
+    # gen_src = dir_name + generator_basename
+    impl_bin = dir_name + "impl.out"
+    # gen_bin = dir_name + "generator.out"
+
+    os.system("cp " + impl + " " + impl_src)
+
+    # os.system("cp " + generator + " " + gen_src)
+    os.system("g++ " + impl_src + " -o " + impl_bin)
+    # os.system("g++ " + gen_src + " -o " + gen_bin)
+    os.system("g++ checker.cpp -o check.out")
+
+    print("Copying tests ... ")
+    # for no_of_nodes in n_values:
+    #     for idx in range(no_of_tests):
+    #         print("Generating test: #", idx, flush=True)
+    #         test_case = dir_name + "test-" + str(test_number)  + '-' + str(no_of_nodes) + '-' + str(idx)  +  ".txt"
+    #         os.system(gen_bin + " " + str(no_of_nodes) + " > " + test_case)
+    test_names = [f for f in os.listdir(dataset_dir) if os.path.isfile(os.path.join(dataset_dir, f))]
+    for test_name in test_names:
+        print("Copying test: ", test_name, flush=True)
+        os.system("cp " + dataset_dir + "/" + test_name + " " + dir_name)
+    info['no_of_tests'] = len(test_names)
+    
+
+    print()
+    
+    for test_name in test_names:
+        print(f"Running t-spanner on test: #{test_name}", flush=True)
+        test_case = dir_name + test_name
+        test_output = dir_name + "out-" + str(test_number) + '-' + test_name
+        checker_input = dir_name + "checker-input-" + str(test_number) + '-' + test_name
+        os.system(impl_bin + " " + str(t_value) + " < " + test_case + " > " + test_output)
+
+    print()
+    
+    i = 0
+    for test_name in test_names:
+        info[i] = dict()
+        test_case = dir_name + test_name
+        test_output = dir_name + "out-" + str(test_number) + '-' + test_name
+        checker_input = dir_name + "checker-input-" + str(test_number) + '-' + test_name
+       
+        print("Checking for k: #", t_value, flush=True)
+        os.system("echo " + str(t_value) + " > " + checker_input)
+        os.system("cat " + test_case + " >> " + checker_input)
+        os.system("cat " + test_output + " >> " + checker_input)
+        # os.system("./check.out < " + checker_input)
+        check_output = subprocess.run("./check.out < " + checker_input, shell=True, capture_output=True, text=True)
+        # print(check_output.stdout)
+        check_output_json = (json.loads(check_output.stdout))
+        info[i]['status'] = check_output_json['status']
+        info[i]['spanner_score'] = check_output_json['spanner_score']
+        info[i]['n_value'] = check_output_json['no_of_nodes']
+        info[i]['test_case_number'] = i
+        info[i]['test_name'] = test_case
+        info[i]['phase1_edge_count'] = check_output_json['phase1_edge_count']
+        info[i]['phase2_edge_count'] = check_output_json['phase2_edge_count']
+        info[i]['phase1_time'] = check_output_json['phase1_time']
+        info[i]['phase2_time'] = check_output_json['phase2_time']
+        info[i]['total_time'] = check_output_json['total_time']
+        info[i]['total_edges'] =  check_output_json['total_edges']
+        info[i]['original_edges'] =  check_output_json['original_edges']
+        info[i]['t_value'] = t_value
+
+        i += 1
+
+    os.system('rm ' + dir_name + 'out-*')
+    os.system('rm ' + dir_name + 'checker-input-*')
+    with open(info_json, 'w') as f:
+        json.dump(info, f, indent=4)
+    
+    print(json.dumps(info, indent=4))
+
+
+@app.command()
 def hello(name: str):
     print(f"Hello {name}")
 
