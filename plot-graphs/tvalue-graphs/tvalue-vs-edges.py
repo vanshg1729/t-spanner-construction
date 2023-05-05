@@ -27,8 +27,8 @@ def plot_expected_tvalue_vs_edges(ax, data):
     lower_bound = [lower_bound_spanner_edges(n_value, t_value) for t_value in t_values]
     upper_bound = [upper_bound_spanner_edges(n_value, t_value) for t_value in t_values]
 
-    ax.plot(t_values, lower_bound, label='Lower bound of Spanner Edges')
-    ax.plot(t_values, upper_bound, label='Upper bound of Spanner Edges')
+    #ax.plot(t_values, lower_bound, label='Lower bound of Spanner Edges')
+    #ax.plot(t_values, upper_bound, label='Upper bound of Spanner Edges')
 
 
 def plot_tvalue_vs_edges(ax, path):
