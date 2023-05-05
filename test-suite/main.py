@@ -156,19 +156,30 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     tinc = int(tinc)
     t_values = [ i for i  in range(tstart, tend+tstart+1, tinc)]
     test_number = math.floor(time.time()) - start_time
+
     info = {}
     info['test_number'] = test_number
-    info['cmd'] = 'cross_t_test'
+    info['cmd'] = 'ttest'
     info['impl'] = impl
     info['generator'] = generator
     info['n_value'] = no_of_nodes
-    # info['t_value'] = t_value
+    info['tstart'] = tstart
+    info['tend'] = tend
+    info['tinc'] = tinc
     info['no_of_tests'] = len(t_values) * no_of_tests
     info['tests_per_t'] = no_of_tests
-    # no_of_tests = len(t_values)
     info['t_values'] = str(t_values)
+
+    total_tests = len(t_values) * no_of_tests
+
     dir_name = "./outputs/output-" + str(test_number) + "/"
+    input_dir = dir_name + "in" + "/"
+    output_dir = dir_name + "out" + "/"
+    checker_dir = dir_name + "check" + "/"
     os.system("mkdir " + dir_name)
+    os.system(f"mkdir {input_dir}")
+    os.system(f"mkdir {output_dir}")
+    os.system(f"mkdir {checker_dir}")
 
     impl_basename = os.path.basename(impl)
     generator_basename = os.path.basename(generator)
@@ -188,17 +199,19 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     print("Generating tests ... ")
     for idx in range(no_of_tests):
         print("Generating test: #", idx, flush=True)
-        test_case = dir_name + "test-" + str(test_number)  + '-' + str(idx) +  ".txt"
+        test_case = input_dir + "test-" + str(test_number)  + '-' + str(idx) +  ".txt"
         os.system(gen_bin + " " + str(no_of_nodes) + " > " + test_case)
     
     print()
     
-    for t_value in t_values:
+    for i, t_value in enumerate(t_values):
         for idx in range(no_of_tests):
-            print(f"Running t-spanner on t = {t_value}, n = {no_of_nodes}, test: # {idx}", flush=True)
-            test_case = dir_name + "test-" + str(test_number) + '-' + str(idx) + ".txt"
-            test_output = dir_name + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
-            checker_input = dir_name + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
+            test_num = i * no_of_tests + idx + 1
+            test_case = input_dir + "test-" + str(test_number) + '-' + str(idx) + ".txt"
+            test_output = output_dir + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
+            checker_input = checker_dir + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
+            test_basename = os.path.basename(test_case)
+            print(f"Running test: #{test_num}/{total_tests} on t = {t_value}, n = {no_of_nodes}, testcase = {idx}, path = {test_basename}", flush=True)
             os.system(impl_bin + " " + str(t_value) + " < " + test_case + " > " + test_output)
 
     print()
@@ -207,9 +220,9 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     for t_value in t_values:
         for idx in range(no_of_tests):
             info[i * no_of_tests + idx] = dict()
-            test_case = dir_name + "test-" + str(test_number) + '-' + str(idx) + ".txt"
-            test_output = dir_name + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
-            checker_input = dir_name + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
+            test_case = input_dir + "test-" + str(test_number) + '-' + str(idx) + ".txt"
+            test_output = output_dir + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
+            checker_input = checker_dir + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
             
             print(f"Checking for t: {t_value}, idx: {idx}", flush=True)
             os.system("echo " + str(t_value) + " > " + checker_input)
@@ -233,8 +246,8 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
             info[i * no_of_tests + idx]['t_value'] = t_value
         i += 1
 
-    os.system('rm ' + dir_name + 'out-*')
-    os.system('rm ' + dir_name + 'checker-input-*')
+    #os.system('rm ' + dir_name + 'out-*')
+    #os.system('rm ' + dir_name + 'checker-input-*')
 
  
     with open(info_json, 'w') as f:
@@ -336,7 +349,7 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
     print(json.dumps(info, indent=4))
 
 @app.command()
-def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=100, tinc=10):
+def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=100, tinc=10):
     tstart = max(3, int(tstart))
     tend = int(tend)
     tinc = int(tinc)
@@ -355,7 +368,6 @@ def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=10
         dataset_path += '/'
 
     dir_name = "./outputs/output-" + str(test_number) + "/"
-    dataset_basename = os.path.basename(dataset_path)
     output_dir = dir_name + "out" + "/"
     checker_dir = dir_name + "check" + "/"
     test_dataset_path = dir_name + "dataset" + "/"
@@ -388,11 +400,13 @@ def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=10
     info['no_of_tests'] = len(t_values) * no_of_tests
     info['tests_per_t'] = no_of_tests
 
+    total_tests = len(t_values) * len(testcase_filepaths)
+
     # generating the output for all the input testcases
     for i, t_value in enumerate(t_values):
         for idx, filepath in enumerate(testcase_filepaths):
             test_num = i * no_of_tests + idx + 1
-            print(f"Running test: #{test_num} with t = {t_value}, n = {no_of_nodes}, testcase: #{idx}, path = {filepath}", flush=True)
+            print(f"Running test: #{test_num}/{total_tests} with t = {t_value}, n = {no_of_nodes}, testcase: #{idx}, path = {filepath}", flush=True)
             in_path = test_dataset_path + filepath
             out_path = output_dir + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
             os.system(impl_bin + " " + str(t_value) + " < " + in_path + " > " + out_path)
