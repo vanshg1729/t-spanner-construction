@@ -155,8 +155,6 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     tend = int(tend)
     tinc = int(tinc)
     t_values = [ i for i  in range(tstart, tend+tstart+1, tinc)]
-    with open("./outputs/metadata.json", "r") as f:
-        metadata = json.load(f)
     test_number = math.floor(time.time()) - start_time
     info = {}
     info['test_number'] = test_number
@@ -197,7 +195,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     
     for t_value in t_values:
         for idx in range(no_of_tests):
-            print("Running t-spanner on test: #", idx, flush=True)
+            print(f"Running t-spanner on t = {t_value}, n = {no_of_nodes}, test: # {idx}", flush=True)
             test_case = dir_name + "test-" + str(test_number) + '-' + str(idx) + ".txt"
             test_output = dir_name + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
             checker_input = dir_name + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
@@ -213,7 +211,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
             test_output = dir_name + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
             checker_input = dir_name + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
             
-            print("Checking for t: ", t_value, " idx: ", idx, flush=True)
+            print(f"Checking for t: {t_value}, idx: {idx}", flush=True)
             os.system("echo " + str(t_value) + " > " + checker_input)
             os.system("cat " + test_case + " >> " + checker_input)
             os.system("cat " + test_output + " >> " + checker_input)
@@ -291,7 +289,7 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
     
     for no_of_nodes in n_values:
         for idx in range(no_of_tests):
-            print("Running t-spanner on test: #", idx, flush=True)
+            print(f"Running t-spanner on n = {no_of_nodes}, t = {t_value}, test: #{idx}", flush=True)
             test_case = dir_name + "test-" + str(test_number)  + '-' + str(no_of_nodes) + '-' + str(idx)  +  ".txt"
             test_output = dir_name + "out-" + str(test_number) + '-' + str(no_of_nodes) + '-' + str(idx) + '-' + ".txt"
             checker_input = dir_name + "checker-input-" + str(test_number) + '-' + str(no_of_nodes) + '-' + str(idx) + ".txt"
