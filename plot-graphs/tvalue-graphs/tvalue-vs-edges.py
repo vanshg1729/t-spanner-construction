@@ -63,7 +63,7 @@ data = {}
 for path in paths:
     data = plot_tvalue_vs_edges(ax, path)
 
-plot_expected_tvalue_vs_edges(ax, data)
+#plot_expected_tvalue_vs_edges(ax, data)
 n_value = int(data['n_value'])
 
 ax.set_title(f"T value vs Number of Spanner edges for {n_value} node graphs")

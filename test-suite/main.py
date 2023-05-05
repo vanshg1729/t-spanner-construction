@@ -404,7 +404,7 @@ def ttestdata(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=10
         for idx, filepath in enumerate(testcase_filepaths):
             info[i * no_of_tests + idx] = dict()
             in_path = test_dataset_path + filepath
-            out_path = dir_name + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
+            out_path = output_dir + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
             checker_input = checker_dir + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
             
             print(f"Checking for t: {t_value}, idx: {idx}", flush=True)
