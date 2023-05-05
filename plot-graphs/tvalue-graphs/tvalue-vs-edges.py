@@ -41,7 +41,7 @@ keys = list(no_of_edges.keys())
 spanner_edges = list(no_of_edges.values())
 
 ax.plot(keys, spanner_edges, label='Number of Spanner Edges')
-ax.plot(t_values, expected_edges, label='Expected Number of edges')
+#ax.plot(t_values, expected_edges, label='Expected Number of edges')
 ax.set_title(f"T value vs Number of Spanner edges for {n_value} node graphs")
 ax.set_xlabel("T value")
 ax.set_ylabel("Number of edges in spanner graph")

@@ -150,12 +150,13 @@ def multiTest(impl: str, generator: str, no_of_nodes: int, t_value: int, no_of_t
     print(json.dumps(info, indent=4))
 
 @app.command()
-def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, nstart=3, nend=100, ninc=10):
-    nstart = max(3, int(nstart))
-    nend = int(nend)
-    ninc = int(ninc)
-    t_values = [ i for i  in range(nstart, nend+nstart+1, ninc)]
-
+def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=3, tend=100, tinc=10):
+    tstart = max(3, int(tstart))
+    tend = int(tend)
+    tinc = int(tinc)
+    t_values = [ i for i  in range(tstart, tend+tstart+1, tinc)]
+    with open("./outputs/metadata.json", "r") as f:
+        metadata = json.load(f)
     test_number = math.floor(time.time()) - start_time
     info = {}
     info['test_number'] = test_number
