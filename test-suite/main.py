@@ -13,6 +13,9 @@ start_time = 1683228252
 
 @app.command()
 def create_dataset(generator: str, no_of_nodes: int, no_of_tests: int):
+    """
+    Create a Dataset with a single n value
+    """
     dataset_num = math.floor(time.time()) - start_time
     dir_name = "./datasets/dataset-" + str(dataset_num) + "/"
     os.system(f"mkdir {dir_name}")
@@ -28,6 +31,38 @@ def create_dataset(generator: str, no_of_nodes: int, no_of_tests: int):
         test_case = dir_name + "test-" + str(idx) + ".txt"
         print(f"Generating test: #{idx + 1}/{no_of_tests} at {test_case}", flush=True)
         os.system(gen_bin + " " + str(no_of_nodes) + " > " + test_case)
+
+    print(f"Written all testcases to {dir_name}")
+
+
+@app.command()
+def create_ndata(generator: str, no_of_tests: int, nstart=3, nend=100, ninc=10):
+    """
+    Create a Dataset with different n values
+    """
+    nstart = max(3, int(nstart))
+    nend = int(nend)
+    ninc = int(ninc)
+    n_values = [ i for i  in range(nstart, nend+1, ninc)]
+
+    dataset_num = math.floor(time.time()) - start_time
+    dir_name = "./datasets/dataset-" + str(dataset_num) + "/"
+    os.system(f"mkdir {dir_name}")
+    generator_basename = os.path.basename(generator)
+
+    gen_src = dir_name + generator_basename
+    gen_bin = dir_name + "generator.out"
+    os.system("cp " + generator + " " + gen_src)
+    os.system("g++ " + gen_src + " -o " + gen_bin)
+
+    total_tests = len(n_values) * no_of_tests
+    print(f"Generating tests in {dir_name}")
+    for i, n_value in enumerate(n_values):
+        for idx in range(no_of_tests):
+            test_num = i * no_of_tests + idx + 1
+            testcase_path = dir_name + "test-" + str(idx) + ".txt"
+            print(f"Generating test: #{test_num}/{total_tests} with n_value = {n_value} at {testcase_path}", flush=True)
+            os.system(gen_bin + " " + str(n_value) + " > " + testcase_path)
 
     print(f"Written all testcases to {dir_name}")
 
