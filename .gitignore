@@ -1,4 +1,5 @@
 *.txt
 *.out
 outputs/metadata.json
+vansh-tests/*
 .vscode
