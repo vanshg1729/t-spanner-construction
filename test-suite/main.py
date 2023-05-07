@@ -60,7 +60,7 @@ def create_ndata(generator: str, no_of_tests: int, nstart=3, nend=100, ninc=10):
     for i, n_value in enumerate(n_values):
         for idx in range(no_of_tests):
             test_num = i * no_of_tests + idx + 1
-            testcase_path = dir_name + "test-" + str(idx) + ".txt"
+            testcase_path = dir_name + "test-" + str(n_value) + "-" + str(idx) + ".txt"
             print(f"Generating test: #{test_num}/{total_tests} with n_value = {n_value} at {testcase_path}", flush=True)
             os.system(gen_bin + " " + str(n_value) + " > " + testcase_path)
 
