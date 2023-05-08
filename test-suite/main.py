@@ -36,14 +36,17 @@ def create_dataset(generator: str, no_of_nodes: int, no_of_tests: int):
 
 
 @app.command()
-def create_ndata(generator: str, no_of_tests: int, nstart=3, nend=100, ninc=10):
+def create_ndata(generator: str, no_of_tests: int, nstart=3, nend=100, ninc=10,  custom_data: str = "[]"):
     """
     Create a Dataset with different n values
     """
     nstart = max(3, int(nstart))
     nend = int(nend)
     ninc = int(ninc)
-    n_values = [ i for i  in range(nstart, nend+1, ninc)]
+    if custom_data == "[]":
+        n_values = [ i for i  in range(nstart, nend+1, ninc)]
+    else:
+        n_values = [int(i.strip()) for i in custom_data[1::][:-1].split(',')]
 
     dataset_num = math.floor(time.time()) - start_time
     dir_name = "./datasets/dataset-" + str(dataset_num) + "/"
