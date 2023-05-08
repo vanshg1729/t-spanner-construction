@@ -596,7 +596,7 @@ def test_data(impl: str, dataset_path : str, t_value: int):
         out_path = output_dir + "out-" + str(test_number) + '-' + str(n_value) + '-' + str(idx) + '-' + ".txt"
         checker_input = checker_dir + "checker-input-" + str(test_number) + '-' + str(n_value) + '-' + str(idx) + ".txt"
         
-        print("Checking test: #{idx + 1}{no_of_tests} with t = {t_value}, n = {n_value}, path = {out_path}")
+        print(f"Checking test: #{idx + 1}{no_of_tests} with t = {t_value}, n = {n_value}, path = {out_path}")
         os.system("echo " + str(t_value) + " > " + checker_input)
         os.system("cat " + in_path + " >> " + checker_input)
         os.system("cat " + out_path + " >> " + checker_input)
