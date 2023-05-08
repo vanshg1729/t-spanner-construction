@@ -143,6 +143,8 @@ int main(){
         cout<<"\"YES\",";
     else
         cout<<"\"NO\",";
+    printJson("n_value", to_string(n));
+    printJson("t_value", to_string(t));
     printJson("spanner_score", to_string(spanner_score));
     printJson("phase1_edge_count", to_string(phase1_edge_count));
     printJson("phase2_edge_count", to_string(phase2_edge_count));
