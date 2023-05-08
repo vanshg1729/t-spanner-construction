@@ -33,8 +33,10 @@ int choose_node(int n, int k) {
 
 void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& new_cluster_centers, int n, int t){
     double k = (t + 1)/2.0;
+    cerr << k << endl;
     double probability = 1.0 / (pow(1.0 * n, 1.0/k));
     double expected_centers = original_cluster_centers.size() * probability;
+    cerr << n << " " << t << " " << k << " " << " " << probability << " " << expected_centers << endl;
     for(int i = 0; i < original_cluster_centers.size(); i++){
         if(i > expected_centers +  1){
             break;

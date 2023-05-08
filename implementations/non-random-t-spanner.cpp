@@ -40,6 +40,7 @@ void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& 
             break;
         }
         new_cluster_centers.push_back(original_cluster_centers[i]);
+	is_cluster[original_cluster_centers[i]] = 1;
     }
 }
 
