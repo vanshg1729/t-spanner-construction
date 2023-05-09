@@ -276,7 +276,7 @@ int main(int argc, char *argv[]) {
     // just a safety check that we had (k - 1) iterations
     assert(iter == k);
 
-    int idx = iter % 2;
+    int idx = (iter + 1) % 2;
     phase2_cluster_count = cluster_centers[idx].size();
 
     auto phase2_start = high_resolution_clock::now();
