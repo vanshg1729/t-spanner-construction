@@ -300,6 +300,8 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
             for key, value in check_output_json.items():
                 info[i * no_of_tests + idx][key] = value
 
+            info[i * no_of_tests + idx]['test_case_number'] = idx 
+
     #os.system('rm ' + dir_name + 'out-*')
     #os.system('rm ' + dir_name + 'checker-input-*')
 

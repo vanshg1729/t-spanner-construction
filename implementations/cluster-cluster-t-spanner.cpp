@@ -35,11 +35,12 @@ int main(int argc, char *argv[]) {
     using std::chrono::duration;
     using std::chrono::milliseconds;
 
-    int k = 3; // t-value for t-spanner
+    int t = 3; // t-value for t-spanner
     if (argc > 1) {
-        k = atoi(argv[1]);
+        t = atoi(argv[1]);
         //cout << "value of k: " << k << "\n";
     }
+    int k = (int)((t + 1)/2.0);
 
     set<pii> adj[maxn] = {};
     int cluster[maxn + 10] = {}; // tells the cluster to which node i belongs to
