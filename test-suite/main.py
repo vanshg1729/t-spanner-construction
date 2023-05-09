@@ -211,7 +211,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     tstart = max(3, int(tstart))
     tend = int(tend)
     tinc = int(tinc)
-    t_values = [ i for i  in range(tstart, tend+tstart+1, tinc)]
+    t_values = [ i for i  in range(tstart, tend+tinc+1, tinc)]
     test_number = math.floor(time.time()) - start_time
 
     info = {}
