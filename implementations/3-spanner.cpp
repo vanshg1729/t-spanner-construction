@@ -36,6 +36,7 @@ int main() {
     int sqrt_n = sqrt(n);
     int phase_one_edge_count = 0;
     int phase_two_edge_count = 0;
+    int phase2_cluster_count = 0;
 
     for (int i = 0; i < m; i++) {
         int u, v, w;
@@ -129,6 +130,7 @@ int main() {
 
     auto phase1_end = high_resolution_clock::now();
     phase_one_edge_count = spanner_edges.size();
+    phase2_cluster_count = cluster_centers.size();
 
     // Phase 2 : Cluster-Vertex joining
 
@@ -184,6 +186,7 @@ int main() {
     cout << phase1_time.count() << "\n";
     cout << phase2_time.count() << "\n";
     cout << total_time.count() << "\n";
+    cout << phase2_cluster_count << "\n";
     /*
     cout << "Number of clusters: " << cluster_count << "\n";
     cout << "Phase 1 edge count: " << phase_one_edge_count << "\n";

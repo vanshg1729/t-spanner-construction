@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
     int cluster_count = 0;
     int phase_one_edge_count = 0;
     int phase_two_edge_count = 0;
+    int phase2_cluster_count = 0;
 
     // all edges of E' that belong to the ith cluster
     // will be used in Phase 2: Cluster-Cluster joining
@@ -278,6 +279,9 @@ int main(int argc, char *argv[]) {
     // End of Phase 1
     auto phase1_end = high_resolution_clock::now();
     phase_one_edge_count = spanner_edges.size();
+
+    int idx = iter % 2;
+    phase2_cluster_count = cluster_centers[idx].size();
     
     // Start of Phase 2: Cluster-Cluster joining
     auto phase2_start = high_resolution_clock::now();
@@ -375,4 +379,5 @@ int main(int argc, char *argv[]) {
     cout << phase1_time.count() << "\n";
     cout << phase2_time.count() << "\n";
     cout << total_time.count() << "\n";
+    cout << phase2_cluster_count << "\n";
 }
