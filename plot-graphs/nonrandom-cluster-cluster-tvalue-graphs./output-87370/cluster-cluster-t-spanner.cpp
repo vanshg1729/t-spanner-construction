@@ -28,22 +28,6 @@ int choose_node(int n, int k) {
     return 0;
 }
 
-int is_cluster[maxn + 10] = {}; // tells whether a node is a cluster center
-
-
-void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& new_cluster_centers, int n, int k){
-    double probability = 1.0 / (pow(1.0 * n, 1.0/k));
-    double expected_centers = original_cluster_centers.size() * probability;
-    for(int i = 0; i < original_cluster_centers.size(); i++){
-        if(i > expected_centers +  1){
-            break;
-        }
-        new_cluster_centers.push_back(original_cluster_centers[i]);
-	is_cluster[original_cluster_centers[i]] = 1;
-    }
-}
-
-
 int main(int argc, char *argv[]) {
 
     using std::chrono::high_resolution_clock;
@@ -51,22 +35,21 @@ int main(int argc, char *argv[]) {
     using std::chrono::duration;
     using std::chrono::milliseconds;
 
-    int t = 3; // t-value for t-spanner
+    int k = 3; // t-value for t-spanner
     if (argc > 1) {
-        t = atoi(argv[1]);
+        k = atoi(argv[1]);
         //cout << "value of k: " << k << "\n";
     }
-    int k = (int)((t + 1)/2.0);
 
     set<pii> adj[maxn] = {};
     int cluster[maxn + 10] = {}; // tells the cluster to which node i belongs to
     int cluster_old[maxn + 10] = {};
+    int is_cluster[maxn + 10] = {}; // tells whether a node is a cluster center
     vector<int> cluster_centers[2] = {};
     vector<tuple<int, int, int>> cluster_edges[2] = {};
     int cluster_count = 0;
     int phase_one_edge_count = 0;
     int phase_two_edge_count = 0;
-    int phase2_cluster_count = 0;
 
     // all edges of E' that belong to the ith cluster
     // will be used in Phase 2: Cluster-Cluster joining
@@ -112,14 +95,12 @@ int main(int argc, char *argv[]) {
         // Start of Step 1: Forming a sample of Clusters
 
         // sampling the cluster centers with probability (n^(-1/k))
-        // for (auto u : cluster_centers[p_idx]) {
-        //     if (choose_node(n, k)) {
-        //         is_cluster[u] = 1;
-        //         cluster_centers[idx].push_back(u);
-        //     }
-        // }
-        // Non random
-        choose_cluster_centers(cluster_centers[p_idx], cluster_centers[idx], n, k);
+        for (auto u : cluster_centers[p_idx]) {
+            if (choose_node(n, k)) {
+                is_cluster[u] = 1;
+                cluster_centers[idx].push_back(u);
+            }
+        }
 
         // adding cluster edges from (E_(i-1)) to E_i
         for (auto edge : cluster_edges[p_idx]) {
@@ -297,9 +278,6 @@ int main(int argc, char *argv[]) {
     auto phase1_end = high_resolution_clock::now();
     phase_one_edge_count = spanner_edges.size();
     
-    int idx = (iter + 1) % 2;
-    phase2_cluster_count = cluster_centers[idx].size();
-    
     // Start of Phase 2: Cluster-Cluster joining
     auto phase2_start = high_resolution_clock::now();
 
@@ -396,5 +374,4 @@ int main(int argc, char *argv[]) {
     cout << phase1_time.count() << "\n";
     cout << phase2_time.count() << "\n";
     cout << total_time.count() << "\n";
-    cout << phase2_cluster_count << "\n";
 }

@@ -31,8 +31,7 @@ int choose_node(int n, int k) {
     return 0;
 }
 
-void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& new_cluster_centers, int n, int t){
-    double k = (t + 1)/2.0;
+void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& new_cluster_centers, int n, int k){
     double probability = 1.0 / (pow(1.0 * n, 1.0/k));
     double expected_centers = original_cluster_centers.size() * probability;
     for(int i = 0; i < original_cluster_centers.size(); i++){
@@ -43,6 +42,19 @@ void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& 
 	is_cluster[original_cluster_centers[i]] = 1;
     }
 }
+
+void choose_alternating_cluster_centers(vector<int>& original_cluster_centers, vector<int>& new_cluster_centers, int n, int k, int idx){
+    double probability = 1.0 / (pow(1.0 * n, 1.0/k));
+    double expected_centers = original_cluster_centers.size() * probability;
+    for(int i = 0; i < original_cluster_centers.size(); i++){
+        if(i > expected_centers +  1){
+            break;
+        }
+        new_cluster_centers.push_back(original_cluster_centers[i]);
+	is_cluster[original_cluster_centers[i]] = 1;
+    }
+}
+
 
 int main(int argc, char *argv[]) {
 

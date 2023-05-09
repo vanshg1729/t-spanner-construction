@@ -9,6 +9,7 @@ Computing Sparse Spanners in Weighted Graphs
 */
 
 #include <bits/stdc++.h>
+#include <chrono>
 using namespace std;
 
 #define fr first
@@ -17,6 +18,8 @@ using namespace std;
 typedef pair<int, int> pii;
 
 const int maxn = 50000;
+int is_cluster[maxn + 10] = {}; // tells whether a node is a cluster center
+
 
 int choose_node(int n, int k) {
     double exponent = (1.0 -1.0/k);
@@ -28,10 +31,8 @@ int choose_node(int n, int k) {
     return 0;
 }
 
-int is_cluster[maxn + 10] = {}; // tells whether a node is a cluster center
-
-
-void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& new_cluster_centers, int n, int k){
+void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& new_cluster_centers, int n, int t){
+    double k = (t + 1)/2.0;
     double probability = 1.0 / (pow(1.0 * n, 1.0/k));
     double expected_centers = original_cluster_centers.size() * probability;
     for(int i = 0; i < original_cluster_centers.size(); i++){
@@ -42,7 +43,6 @@ void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& 
 	is_cluster[original_cluster_centers[i]] = 1;
     }
 }
-
 
 int main(int argc, char *argv[]) {
 
@@ -60,17 +60,12 @@ int main(int argc, char *argv[]) {
 
     set<pii> adj[maxn] = {};
     int cluster[maxn + 10] = {}; // tells the cluster to which node i belongs to
-    int cluster_old[maxn + 10] = {};
     vector<int> cluster_centers[2] = {};
     vector<tuple<int, int, int>> cluster_edges[2] = {};
     int cluster_count = 0;
     int phase_one_edge_count = 0;
     int phase_two_edge_count = 0;
     int phase2_cluster_count = 0;
-
-    // all edges of E' that belong to the ith cluster
-    // will be used in Phase 2: Cluster-Cluster joining
-    set<tuple<int, int, int>> cluster_adj[maxn + 10] = {};
 
     vector<tuple<int, int, int>> spanner_edges = {};
 
@@ -89,12 +84,11 @@ int main(int argc, char *argv[]) {
     // initializing C_0
     for (int i = 1; i <= n; i++) {
         cluster[i] = i;
-        cluster_old[i] = i;
         cluster_centers[0].push_back(i);
     }
 
     int iter;
-    for (iter = 1; iter <= k/2; iter++) {
+    for (iter = 1; iter < k; iter++) {
         int idx = iter % 2;
         int p_idx = (iter + 1) % 2;
 
@@ -104,23 +98,18 @@ int main(int argc, char *argv[]) {
         memset(is_cluster, 0, maxn * sizeof(int));
         cluster_centers[idx].clear();
         cluster_edges[idx].clear();
-
-        for (int i = 1; i <= n; i++) {
-            cluster_old[i] = cluster[i];
-        }
         
         // Start of Step 1: Forming a sample of Clusters
 
         // sampling the cluster centers with probability (n^(-1/k))
-        // for (auto u : cluster_centers[p_idx]) {
-        //     if (choose_node(n, k)) {
-        //         is_cluster[u] = 1;
-        //         cluster_centers[idx].push_back(u);
-        //     }
-        // }
-        // Non random
+        /*using random*/   
+            // for (auto u : cluster_centers[p_idx]) {
+            //     if (choose_node(n, k)) {
+            //         is_cluster[u] = 1;
+            //         cluster_centers[idx].push_back(u);
+            //     }
+            // }
         choose_cluster_centers(cluster_centers[p_idx], cluster_centers[idx], n, k);
-
         // adding cluster edges from (E_(i-1)) to E_i
         for (auto edge : cluster_edges[p_idx]) {
             int u = get<0>(edge), v = get<1>(edge); 
@@ -297,80 +286,47 @@ int main(int argc, char *argv[]) {
     auto phase1_end = high_resolution_clock::now();
     phase_one_edge_count = spanner_edges.size();
     
-    int idx = (iter + 1) % 2;
+    int idx = iter % 2;
     phase2_cluster_count = cluster_centers[idx].size();
-    
-    // Start of Phase 2: Cluster-Cluster joining
+    // Start of Phase 2: Vertex-Cluster joining
+
+    // just a safety check that we had (k - 1) iterations
+    assert(iter == k);
+
     auto phase2_start = high_resolution_clock::now();
-
-    // C_{k/2} - clusters at end of k/2 th iteration
-    // C_{k/2 - 1} - clusters at end of k/2 - 1 th iteration
-    int other_cluster[maxn] = {}; // the cluster node i belonged to in C_{k/2} or C_{k/2 -1}
-
-    if (k % 2 == 0) {
-        for (int i = 1; i <= n; i++) {
-            other_cluster[i] = cluster_old[i];
-        }
-    }
-    else {
-        for (int i = 1; i <= n; i++) {
-            other_cluster[i] = cluster[i];
-        }
-    }
-
-    // making the cluster adjacency list
     for (int i = 1; i <= n; i++) {
-        int c1 = cluster[i];
+        // smallest edge from i to all the final clusters (C_{k - 1})
+        vector<pii> smallest_edge(n + 10, {0, INF});
+
+        vector<pii> delete_edges = {}; // edges to be deleted from original graph
+
+        // finding smallest edges from node i to all the clusters
         for (auto u : adj[i]) {
-            int c2 = cluster[u.fr];
-            cluster_adj[c1].insert({i, u.fr, u.sc});
-            cluster_adj[c2].insert({u.fr, i, u.sc});
-        }
-    }
+            int cluster_center = cluster[u.fr];
 
-    for (int i = 1; i <= n; i++) {
+            auto v = smallest_edge[cluster_center];
 
-        // smallest edge from cluster i to all the other_clusters
-        vector<tuple<int, int, int>> smallest_edge(n + 10, {0, 0, INF});
-        vector<tuple<int, int, int>> delete_edges = {};
-
-        for (auto edge : cluster_adj[i]) {
-            int u = get<0>(edge), v = get<1>(edge), edge_weight = get<2>(edge);
-            int c2 = other_cluster[v]; // other cluster of node v
-
-            // make sure that first node of edge belongs to the cluster we are iterating over
-            assert(cluster[u] == i);
-            assert(c2 != i);
-
-            auto cur_edge = smallest_edge[c2];
-            
-            int cur_u = get<0>(cur_edge);
-            int cur_v = get<1>(cur_edge);
-            int cur_weight = get<2>(cur_edge);
-
-            if (edge_weight < cur_weight) {
-                smallest_edge[c2] = edge;
-                delete_edges.push_back(cur_edge);
-                cluster_adj[c2].erase({cur_v, cur_u, cur_weight});
+            if (u.sc < v.sc) {
+                delete_edges.push_back(v);
+                adj[v.fr].erase({i, v.sc});
+                smallest_edge[cluster_center] = u;
             }
             else {
-                delete_edges.push_back(edge);
-                cluster_adj[c2].erase({v, u, edge_weight});
+                delete_edges.push_back(u);
+                adj[u.fr].erase({i, u.sc});
             }
         }
 
-        // delete the smallest edge from cluster i to some other cluster
-        for (auto edge : delete_edges) cluster_adj[i].erase(edge);
+        // delete the non-smallest edges from node i to some node in other cluster
+        for (auto edge : delete_edges) adj[i].erase(edge);
 
-        // adding all the smallest inter-cluster edges from cluster i to spanner graph
-        for (auto edge : cluster_adj[i]) {
-            int u = get<0>(edge), v = get<1>(edge), edge_weight = get<2>(edge);
-            int c2 = other_cluster[v];
-            spanner_edges.push_back(edge);
-            cluster_adj[c2].erase({v, u, edge_weight});
+        // adding all the smallest edges to the spanner graph
+        for (auto u : adj[i]) {
+            spanner_edges.push_back({i, u.fr, u.sc});
+            adj[u.fr].erase({i, u.sc});
         }
 
-        cluster_adj[i].clear(); // removing all the edges added to spanner graph
+        adj[i].clear(); // removing all the edges added to spanner graph
     }
 
     // End of Phase 2
@@ -396,5 +352,4 @@ int main(int argc, char *argv[]) {
     cout << phase1_time.count() << "\n";
     cout << phase2_time.count() << "\n";
     cout << total_time.count() << "\n";
-    cout << phase2_cluster_count << "\n";
 }
