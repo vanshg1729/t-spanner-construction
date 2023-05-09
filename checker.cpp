@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
     }
 
     // calculating t-spanner stat variables
-    int phase1_edge_count = 0, phase2_edge_count = 0;
+    int phase1_edge_count = 0, phase2_edge_count = 0, phase2_cluster_count = 0;
     double phase1_time = 0, phase2_time = 0, total_time = 0;
     bool ok = true;
     double spanner_score = 0;
@@ -136,6 +136,7 @@ int main(int argc, char *argv[]){
 
     cin >> phase1_edge_count >> phase2_edge_count;
     cin >> phase1_time >> phase2_time >> total_time;
+    cin >> phase2_cluster_count;
 
     // calculating distances and all the stat variables
     if (calculate_distances) {
@@ -240,6 +241,7 @@ int main(int argc, char *argv[]){
     printJson("total_edges", to_string(m2));
     printJson("original_edges", to_string(m));
     printJson("no_of_nodes", to_string(n));
+    printJson("phase2_cluster_count", to_string(phase2_cluster_count));
     cout<<"\"check\":"<<rand()<<"}"<<endl;
     return 0;
 }

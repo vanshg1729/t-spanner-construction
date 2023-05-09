@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
     int cluster_count = 0;
     int phase_one_edge_count = 0;
     int phase_two_edge_count = 0;
+    int phase2_cluster_count = 0;
 
     vector<tuple<int, int, int>> spanner_edges = {};
 
@@ -285,6 +286,8 @@ int main(int argc, char *argv[]) {
     auto phase1_end = high_resolution_clock::now();
     phase_one_edge_count = spanner_edges.size();
     
+    int idx = iter % 2;
+    phase2_cluster_count = cluster_centers[idx].size();
     // Start of Phase 2: Vertex-Cluster joining
 
     // just a safety check that we had (k - 1) iterations
