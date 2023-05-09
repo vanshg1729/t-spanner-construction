@@ -128,6 +128,7 @@ int main(int argc, char *argv[]){
 
     // graph stat maps
     map<string, double> original_stat, spanner_stat;
+    original_stat["connected"] = 1, spanner_stat["connected"] = 1;
     original_stat["avg_path_len"] = 0, spanner_stat["avg_path_len"] = 0;
     original_stat["min_path_len"] = INF, spanner_stat["min_path_len"] = INF;
     original_stat["max_path_len"] = 0, spanner_stat["max_path_len"] = 0;
@@ -157,11 +158,13 @@ int main(int argc, char *argv[]){
                 original_stat["max_path_len"] = max(original_stat["max_path_len"], (double) path_lengths[i][j]);
                 original_stat["avg_path_len"] += (double) path_lengths[i][j];
                 if (path_lengths[i][j] >= t) original_stat["paths_atleast_t"]++;
+                if (dists[i][j] == INF) original_stat["connected"] = 0;
 
                 spanner_stat["min_path_len"] = min(spanner_stat["min_path_len"], (double) path_lengths2[i][j]);
                 spanner_stat["max_path_len"] = max(spanner_stat["max_path_len"], (double) path_lengths2[i][j]);
                 spanner_stat["avg_path_len"] += (double) path_lengths2[i][j];
                 if (path_lengths2[i][j] >= t) spanner_stat["paths_atleast_t"]++;
+                if (dists2[i][j] == INF) spanner_stat["connected"] = 0;
 
                 if(dists2[i][j] > t * dists[i][j]){
         	// cout<<i + 1 <<" "<< j + 1 <<" "<<dists[i][j]<<" "<<dists2[i][j]<<endl;
