@@ -55,8 +55,10 @@ void choose_alternating_cluster_centers(vector<int>& original_cluster_centers, v
             new_cluster_centers.push_back(original_cluster_centers[i]);
 	        is_cluster[original_cluster_centers[i]] = 1;
         }
-        new_cluster_centers.push_back(original_cluster_centers[l - i -1]);
-	    is_cluster[original_cluster_centers[l - i - 1]] = 1;
+        else{
+            new_cluster_centers.push_back(original_cluster_centers[l - i -1]);
+	        is_cluster[original_cluster_centers[l - i - 1]] = 1;
+        } 
     }
 }
 
