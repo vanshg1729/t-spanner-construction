@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
             //         cluster_centers[idx].push_back(u);
             //     }
             // }
-        choose_cluster_centers(cluster_centers[p_idx], cluster_centers[idx], n, k);
+        choose_alternating_cluster_centers(cluster_centers[p_idx], cluster_centers[idx], n, k, idx);
         // adding cluster edges from (E_(i-1)) to E_i
         for (auto edge : cluster_edges[p_idx]) {
             int u = get<0>(edge), v = get<1>(edge); 
