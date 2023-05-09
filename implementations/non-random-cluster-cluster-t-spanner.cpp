@@ -31,8 +31,7 @@ int choose_node(int n, int k) {
 int is_cluster[maxn + 10] = {}; // tells whether a node is a cluster center
 
 
-void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& new_cluster_centers, int n, int t){
-    double k = (t + 1)/2.0;
+void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& new_cluster_centers, int n, int k){
     double probability = 1.0 / (pow(1.0 * n, 1.0/k));
     double expected_centers = original_cluster_centers.size() * probability;
     for(int i = 0; i < original_cluster_centers.size(); i++){
