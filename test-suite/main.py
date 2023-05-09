@@ -207,7 +207,7 @@ def multiTest(impl: str, generator: str, no_of_nodes: int, t_value: int, no_of_t
     print(json.dumps(info, indent=4))
 
 @app.command()
-def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=3, tend=100, tinc=10):
+def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=3, tend=100, tinc=10, checker_args=""):
     tstart = max(3, int(tstart))
     tend = int(tend)
     tinc = int(tinc)
@@ -223,6 +223,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     info['tstart'] = tstart
     info['tend'] = tend
     info['tinc'] = tinc
+    info['checker_args'] = checker_args
     info['no_of_tests'] = len(t_values) * no_of_tests
     info['tests_per_t'] = no_of_tests
     info['t_values'] = str(t_values)
@@ -273,35 +274,31 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
 
     print()
     
-    i = 0
-    for t_value in t_values:
+    for i, t_value in enumerate(t_values):
         for idx in range(no_of_tests):
             info[i * no_of_tests + idx] = dict()
+            info[i * no_of_tests + idx]['n_value'] = no_of_nodes
+            info[i * no_of_tests + idx]['test_case_number'] = idx
+            info[i * no_of_tests + idx]['t_value'] = t_value
+
+            test_num = i * no_of_tests + idx + 1
             test_case = input_dir + "test-" + str(test_number) + '-' + str(idx) + ".txt"
             test_output = output_dir + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
             checker_input = checker_dir + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
-            
-            print(f"Checking for t: {t_value}, idx: {idx}", flush=True)
+            test_basename = os.path.basename(test_case)
+
+            print(f"Checking test: #{test_num}/{total_tests} on t: {t_value}, n = {no_of_nodes}, testcase = {idx}, path = {test_basename}", flush=True)
             os.system("echo " + str(t_value) + " > " + checker_input)
             os.system("cat " + test_case + " >> " + checker_input)
             os.system("cat " + test_output + " >> " + checker_input)
             # os.system("./check.out < " + checker_input)
-            check_output = subprocess.run("./check.out < " + checker_input, shell=True, capture_output=True, text=True)
+
+            check_output = subprocess.run(f"./check.out {checker_args} < " + checker_input, shell=True, capture_output=True, text=True)
             # print(check_output.stdout)
+
             check_output_json = (json.loads(check_output.stdout))
-            info[i * no_of_tests + idx]['status'] = check_output_json['status']
-            info[i * no_of_tests + idx]['spanner_score'] = check_output_json['spanner_score']
-            info[i * no_of_tests + idx]['n_value'] = no_of_nodes
-            info[i * no_of_tests + idx]['test_case_number'] = idx
-            info[i * no_of_tests + idx]['phase1_edge_count'] = check_output_json['phase1_edge_count']
-            info[i * no_of_tests + idx]['phase2_edge_count'] = check_output_json['phase2_edge_count']
-            info[i * no_of_tests + idx]['phase1_time'] = check_output_json['phase1_time']
-            info[i * no_of_tests + idx]['phase2_time'] = check_output_json['phase2_time']
-            info[i * no_of_tests + idx]['total_time'] = check_output_json['total_time']
-            info[i * no_of_tests + idx]['total_edges'] =  check_output_json['total_edges']
-            info[i * no_of_tests + idx]['original_edges'] =  check_output_json['original_edges']
-            info[i * no_of_tests + idx]['t_value'] = t_value
-        i += 1
+            for key, value in check_output_json.items():
+                info[i * no_of_tests + idx][key] = value
 
     #os.system('rm ' + dir_name + 'out-*')
     #os.system('rm ' + dir_name + 'checker-input-*')
@@ -313,7 +310,7 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     print(json.dumps(info, indent=4))
 
 @app.command()
-def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, nend=100, ninc=10):
+def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, nend=100, ninc=10, checker_args=""):
     nstart = max(3, int(nstart))
     nend = int(nend)
     ninc = int(ninc)
@@ -324,6 +321,7 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
     info['nstart'] = nstart
     info['nend'] = nend
     info['ninc'] = ninc
+    info["checker_args"] = checker_args
     # info['n_value'] = no_of_nodes
     info['test_number'] = test_number
     info['impl'] = impl
@@ -376,41 +374,35 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
             test_output = output_dir + "out-" + str(test_number) + '-' + str(no_of_nodes) + '-' + str(idx) + '-' + ".txt"
             checker_input = checker_dir + "checker-input-" + str(test_number) + '-' + str(no_of_nodes) + '-' + str(idx) + ".txt"
             test_basename = os.path.basename(test_case)
-            print(f"Running test: #{test_num}/{total_tests} on t = {t_value}, n = {i}, testcase = {idx}, path = {test_basename}", flush=True)
+            print(f"Running test: #{test_num}/{total_tests} on t = {t_value}, n = {no_of_nodes}, testcase = {idx}, path = {test_basename}", flush=True)
             os.system(impl_bin + " " + str(t_value) + " < " + test_case + " > " + test_output)
 
     print()
     
-    i = 0
-    for no_of_nodes in n_values:
+    for i, no_of_nodes in enumerate(n_values):
         for idx in range(no_of_tests):
             info[i * no_of_tests + idx] = dict()
+            info[i * no_of_tests + idx]['n_value'] = no_of_nodes
+            info[i * no_of_tests + idx]['test_case_number'] = idx
+            info[i * no_of_tests + idx]['t_value'] = t_value
+
+            test_num = i * no_of_tests + idx + 1
             test_case = input_dir + "test-" + str(test_number)  + '-' + str(no_of_nodes) + '-' + str(idx)  +  ".txt"
             test_output = output_dir + "out-" + str(test_number) + '-' + str(no_of_nodes) + '-' + str(idx) + '-' + ".txt"
             checker_input = checker_dir + "checker-input-" + str(test_number) + '-' + str(no_of_nodes) + '-' + str(idx) + ".txt"
+            test_basename = os.path.basename(test_case)
             
-            print("Checking for k: #", t_value, flush=True)
+            print(f"Checking test: #{test_num}/{total_tests} on t = {t_value}, n = {no_of_nodes}, testcase = {idx}, path = {test_basename}", flush=True)
             os.system("echo " + str(t_value) + " > " + checker_input)
             os.system("cat " + test_case + " >> " + checker_input)
             os.system("cat " + test_output + " >> " + checker_input)
             # os.system("./check.out < " + checker_input)
-            check_output = subprocess.run("./check.out < " + checker_input, shell=True, capture_output=True, text=True)
+            check_output = subprocess.run(f"./check.out {checker_args} < " + checker_input, shell=True, capture_output=True, text=True)
             # print(check_output.stdout)
             check_output_json = (json.loads(check_output.stdout))
-            info[i * no_of_tests + idx]['status'] = check_output_json['status']
-            info[i * no_of_tests + idx]['spanner_score'] = check_output_json['spanner_score']
-            info[i * no_of_tests + idx]['n_value'] = no_of_nodes
-            info[i * no_of_tests + idx]['test_case_number'] = idx
-            info[i * no_of_tests + idx]['phase1_edge_count'] = check_output_json['phase1_edge_count']
-            info[i * no_of_tests + idx]['phase2_edge_count'] = check_output_json['phase2_edge_count']
-            info[i * no_of_tests + idx]['phase1_time'] = check_output_json['phase1_time']
-            info[i * no_of_tests + idx]['phase2_time'] = check_output_json['phase2_time']
-            info[i * no_of_tests + idx]['total_time'] = check_output_json['total_time']
-            info[i * no_of_tests + idx]['total_edges'] =  check_output_json['total_edges']
-            info[i * no_of_tests + idx]['original_edges'] =  check_output_json['original_edges']
-            info[i * no_of_tests + idx]['t_value'] = t_value
+            for key, value in check_output_json.items():
+                info[i * no_of_tests + idx][key] = value
 
-        i += 1
 
     #os.system('rm ' + dir_name + 'out-*')
     #os.system('rm ' + dir_name + 'checker-input-*')
@@ -420,7 +412,7 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
     print(json.dumps(info, indent=4))
 
 @app.command()
-def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=100, tinc=10):
+def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=100, tinc=10, checker_args=""):
     tstart = max(3, int(tstart))
     tend = int(tend)
     tinc = int(tinc)
@@ -433,6 +425,7 @@ def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=1
     info['tstart'] = tstart
     info['tend'] = tend
     info['tinc'] = tinc
+    info['checker_args'] = checker_args
     info['impl'] = impl
     info['dataset_path'] = dataset_path
     info['n_value'] = no_of_nodes
@@ -489,30 +482,25 @@ def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=1
     for i, t_value in enumerate(t_values):
         for idx, filepath in enumerate(testcase_filepaths):
             info[i * no_of_tests + idx] = dict()
+            info[i * no_of_tests + idx]['n_value'] = no_of_nodes
+            info[i * no_of_tests + idx]['test_case_number'] = idx
+            info[i * no_of_tests + idx]['t_value'] = t_value
+
+            test_num = i * no_of_tests + idx + 1
             in_path = test_dataset_path + filepath
             out_path = output_dir + "out-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + '-' + ".txt"
             checker_input = checker_dir + "checker-input-" + str(test_number) + '-' + str(t_value) + '-' + str(idx) + ".txt"
             
-            print(f"Checking for t: {t_value}, idx: {idx}", flush=True)
+            print(f"Checking test: #{test_num}/{total_tests} with t = {t_value}, n = {no_of_nodes}, testcase: #{idx}, path = {filepath}", flush=True)
             os.system("echo " + str(t_value) + " > " + checker_input)
             os.system("cat " + in_path + " >> " + checker_input)
             os.system("cat " + out_path + " >> " + checker_input)
             # os.system("./check.out < " + checker_input)
-            check_output = subprocess.run("./check.out < " + checker_input, shell=True, capture_output=True, text=True)
+            check_output = subprocess.run(f"./check.out {checker_args} < " + checker_input, shell=True, capture_output=True, text=True)
             # print(check_output.stdout)
             check_output_json = (json.loads(check_output.stdout))
-            info[i * no_of_tests + idx]['status'] = check_output_json['status']
-            info[i * no_of_tests + idx]['spanner_score'] = check_output_json['spanner_score']
-            info[i * no_of_tests + idx]['n_value'] = no_of_nodes
-            info[i * no_of_tests + idx]['test_case_number'] = idx
-            info[i * no_of_tests + idx]['phase1_edge_count'] = check_output_json['phase1_edge_count']
-            info[i * no_of_tests + idx]['phase2_edge_count'] = check_output_json['phase2_edge_count']
-            info[i * no_of_tests + idx]['phase1_time'] = check_output_json['phase1_time']
-            info[i * no_of_tests + idx]['phase2_time'] = check_output_json['phase2_time']
-            info[i * no_of_tests + idx]['total_time'] = check_output_json['total_time']
-            info[i * no_of_tests + idx]['total_edges'] =  check_output_json['total_edges']
-            info[i * no_of_tests + idx]['original_edges'] =  check_output_json['original_edges']
-            info[i * no_of_tests + idx]['t_value'] = t_value
+            for key, value in check_output_json.items():
+                info[i * no_of_tests + idx][key] = value
 
     #os.system(f'rm -r {output_dir}')
     #os.system(f'rm -r {checker_dir}')
@@ -523,7 +511,7 @@ def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=1
     print(json.dumps(info, indent=4))
 
 @app.command()
-def test_data(impl: str, dataset_path : str, t_value: int):
+def test_data(impl: str, dataset_path : str, t_value: int, checker_args=""):
     test_number = math.floor(time.time()) - start_time
     info = {}
     info['cmd'] = 'test-data'
@@ -532,6 +520,7 @@ def test_data(impl: str, dataset_path : str, t_value: int):
     info['impl'] = impl
     info['dataset_path'] = dataset_path
     info['t_value'] = t_value
+    info['checker_args'] = checker_args
 
     if dataset_path[-1] != '/':
         dataset_path += '/'
@@ -593,32 +582,23 @@ def test_data(impl: str, dataset_path : str, t_value: int):
     
     for idx, filepath in enumerate(testcase_filepaths):
         info[idx] = dict()
+        info[idx]['test_case_number'] = idx
         in_path = test_dataset_path + filepath
         f = open(in_path, 'r')
         n_value = int(f.readline().split(' ')[0])
         out_path = output_dir + "out-" + str(test_number) + '-' + str(n_value) + '-' + str(idx) + '-' + ".txt"
         checker_input = checker_dir + "checker-input-" + str(test_number) + '-' + str(n_value) + '-' + str(idx) + ".txt"
         
-        print(f"Checking test: #{idx + 1}{no_of_tests} with t = {t_value}, n = {n_value}, path = {out_path}")
+        print(f"Checking test: #{idx + 1}/{no_of_tests} with t = {t_value}, n = {n_value}, path = {out_path}")
         os.system("echo " + str(t_value) + " > " + checker_input)
         os.system("cat " + in_path + " >> " + checker_input)
         os.system("cat " + out_path + " >> " + checker_input)
         # os.system("./check.out < " + checker_input)
-        check_output = subprocess.run("./check.out < " + checker_input, shell=True, capture_output=True, text=True)
+        check_output = subprocess.run(f"./check.out {checker_args} < " + checker_input, shell=True, capture_output=True, text=True)
         # print(check_output.stdout)
         check_output_json = (json.loads(check_output.stdout))
-        info[idx]['status'] = check_output_json['status']
-        info[idx]['spanner_score'] = check_output_json['spanner_score']
-        info[idx]['n_value'] = check_output_json['n_value']
-        info[idx]['test_case_number'] = idx
-        info[idx]['phase1_edge_count'] = check_output_json['phase1_edge_count']
-        info[idx]['phase2_edge_count'] = check_output_json['phase2_edge_count']
-        info[idx]['phase1_time'] = check_output_json['phase1_time']
-        info[idx]['phase2_time'] = check_output_json['phase2_time']
-        info[idx]['total_time'] = check_output_json['total_time']
-        info[idx]['total_edges'] =  check_output_json['total_edges']
-        info[idx]['original_edges'] =  check_output_json['original_edges']
-        info[idx]['t_value'] = check_output_json['t_value']
+        for key, value in check_output_json.items():
+            info[idx][key] = value
 
     #os.system('rm ' + dir_name + 'out-*')
     #os.system('rm ' + dir_name + 'checker-input-*')
