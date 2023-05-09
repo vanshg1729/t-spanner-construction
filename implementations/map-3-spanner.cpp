@@ -25,8 +25,8 @@ int main() {
     using std::chrono::duration;
     using std::chrono::milliseconds;
 
-    set<pii> adj[maxn] = {}; // an adjacency list where we have a set for each node, storing pairs
-    
+    // set<pii> adj[maxn] = {}; // an adjacency list where we have a set for each node, storing pairs
+    map<int,int> adj[maxn];
     
     int cluster[maxn + 10] = {}; // tells the cluster to which node i belongs to
     vector<int> cluster_centers = {};
@@ -43,8 +43,10 @@ int main() {
     for (int i = 0; i < m; i++) {
         int u, v, w;
         cin >> u >> v >> w;
-        adj[u].insert({v, w});
-        adj[v].insert({u, w});
+        // adj[u].insert({v, w}); // insert edges into adj list
+        // adj[v].insert({u, w});
+        adj[u][v] = w;
+        adj[v][u] = w;
     }
 
     auto phase1_start = high_resolution_clock::now();
@@ -90,7 +92,7 @@ int main() {
 
             for (auto u : adj[i]) {
                 spanner_edges.push_back({i, u.fr, u.sc});
-                adj[u.fr].erase({i, u.sc});
+                adj[u.fr].erase(i);
             }
 
             adj[i].clear();
@@ -105,11 +107,11 @@ int main() {
             if (u.sc <= cluster_dist) {
                 added_edges.push_back(u);
                 spanner_edges.push_back({i, u.fr, u.sc});
-                adj[u.fr].erase({i, u.sc});
+                adj[u.fr].erase(i);
             }
         }
 
-        for (auto u : added_edges) adj[i].erase(u);
+        for (auto u : added_edges) adj[i].erase(u.fr);
     }
     
     // delete edges between non-sampled vertexes which belong to same cluster
@@ -120,13 +122,13 @@ int main() {
 
         for (auto u : adj[i]) {
             if (!(cluster[u.fr] == u.fr) && (cluster[u.fr] == cluster[i])) {
-                adj[u.fr].erase({i, u.sc});
+                adj[u.fr].erase(i);
                 delete_edges.push_back(u);
             }
         }
 
         for (auto edge : delete_edges) {
-            adj[i].erase(edge);
+            adj[i].erase(edge.fr);
         }
     }
 
@@ -150,20 +152,20 @@ int main() {
 
             if (u.sc < v.sc) {
                 delete_edges.push_back(v);
-                adj[v.fr].erase({i, v.sc});
+                adj[v.fr].erase(i);
                 smallest_edge[cluster_center] = u;
             }
             else {
                 delete_edges.push_back(u);
-                adj[u.fr].erase({i, u.sc});
+                adj[u.fr].erase(i);
             }
         }
 
-        for (auto u : delete_edges) adj[i].erase(u);
+        for (auto u : delete_edges) adj[i].erase(u.fr);
 
         for (auto u : adj[i]) {
             spanner_edges.push_back({i, u.fr, u.sc});
-            adj[u.fr].erase({i, u.sc});
+            adj[u.fr].erase(i);
         }
 
         adj[i].clear(); // removing all the edges added to spanner graph
