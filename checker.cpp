@@ -110,6 +110,7 @@ int main(int argc, char *argv[]){
     // taking input of t-spanner graph of the first graph
     int n2, m2;
     cin >> n2 >> m2;
+    assert(n == n2);
     vector<vector<pair<int,int>>> adj2(n2, vector<pair<int,int>>());
     for(int i = 0; i < m2; i++){
         int x, y, w;
@@ -119,16 +120,18 @@ int main(int argc, char *argv[]){
         adj2[y].push_back({x, w});
     }
 
-    // t-spanner stat variables
+    // calculating t-spanner stat variables
     int phase1_edge_count = 0, phase2_edge_count = 0;
     double phase1_time = 0, phase2_time = 0, total_time = 0;
     bool ok = true;
     double spanner_score = 0;
 
-    // graph stat variables
-    double avg_path_len = 0;
-    int min_path_len = INF, max_path_len = 0;
-    int paths_atleast_t = 0; // number of paths whose length >= k
+    // graph stat maps
+    map<string, double> original_stat, spanner_stat;
+    original_stat["avg_path_len"] = 0, spanner_stat["avg_path_len"] = 0;
+    original_stat["min_path_len"] = INF, spanner_stat["min_path_len"] = INF;
+    original_stat["max_path_len"] = 0, spanner_stat["max_path_len"] = 0;
+    original_stat["paths_atleast_t"] = 0, spanner_stat["paths_atleast_t"] = 0;
 
     cin >> phase1_edge_count >> phase2_edge_count;
     cin >> phase1_time >> phase2_time >> total_time;
@@ -145,15 +148,21 @@ int main(int argc, char *argv[]){
         floyd_warshall(0, dists, adj, path_lengths);
         floyd_warshall(0, dists2, adj2, path_lengths2);
 
+        // iterating over distances of original graph
         for(int i = 0; i < n; i++){
             for(int j = 0; j < n; j++){
                 if (i == j) continue;
                 spanner_score = max(spanner_score, ((double) dists2[i][j])/dists[i][j]);
-                min_path_len = min(min_path_len, path_lengths[i][j]);
-                max_path_len = max(max_path_len, path_lengths[i][j]);
-                avg_path_len += path_lengths[i][j];
+                original_stat["min_path_len"] = min(original_stat["min_path_len"], (double) path_lengths[i][j]);
+                original_stat["max_path_len"] = max(original_stat["max_path_len"], (double) path_lengths[i][j]);
+                original_stat["avg_path_len"] += (double) path_lengths[i][j];
+                if (path_lengths[i][j] >= t) original_stat["paths_atleast_t"]++;
 
-                if (path_lengths[i][j] >= t) paths_atleast_t++;
+                spanner_stat["min_path_len"] = min(spanner_stat["min_path_len"], (double) path_lengths2[i][j]);
+                spanner_stat["max_path_len"] = max(spanner_stat["max_path_len"], (double) path_lengths2[i][j]);
+                spanner_stat["avg_path_len"] += (double) path_lengths2[i][j];
+                if (path_lengths2[i][j] >= t) spanner_stat["paths_atleast_t"]++;
+
                 if(dists2[i][j] > t * dists[i][j]){
         	// cout<<i + 1 <<" "<< j + 1 <<" "<<dists[i][j]<<" "<<dists2[i][j]<<endl;
                     ok = false;
@@ -162,7 +171,8 @@ int main(int argc, char *argv[]){
             }
         }
 
-        avg_path_len /= n * (n - 1);
+        original_stat["avg_path_len"] /= (double) n * (n - 1);
+        spanner_stat["avg_path_len"] /= (double) n * (n - 1);
 
     /*    for(auto v : dists){
             for(auto x : v){
@@ -193,10 +203,29 @@ int main(int argc, char *argv[]){
         cout << "\"NA\",";
     }
     printJson("calculate_distances", to_string(calculate_distances));
-    printJson("min_path_len", to_string(min_path_len));
-    printJson("avg_path_len", to_string(avg_path_len));
-    printJson("max_path_len", to_string(max_path_len));
-    printJson("paths_atleast_t", to_string(paths_atleast_t));
+
+    for (auto item : original_stat) {
+        auto key = item.first;
+        auto value = item.second;
+        if (calculate_distances) {
+            printJson("original_" + key, to_string(value));
+        }
+        else {
+            printJson("original_" + key, "NA");
+        }
+    }
+
+    for (auto item : spanner_stat) {
+        auto key = item.first;
+        auto value = item.second;
+        if (calculate_distances) {
+            printJson("spanner_" + key, to_string(value));
+        }
+        else {
+            printJson("spanner_" + key, "NA");
+        }
+    }
+
     printJson("n_value", to_string(n));
     printJson("t_value", to_string(t));
     printJson("spanner_score", to_string(spanner_score));
