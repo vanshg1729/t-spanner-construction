@@ -1,36 +1,9 @@
-import os
 import sys
+import os
 from collections import defaultdict
 import json
 import matplotlib.pyplot as plt
 import numpy as np
-
-def lower_bound_spanner_edges(n, t_value:int):
-    k_value = (t_value + 1)/2
-    return pow(n, 1 + 1/k_value)
-
-def upper_bound_spanner_edges(n, t_value:int):
-    k_value = (t_value + 1)/2
-    return k_value * pow(n, 1 + 1/k_value)
-
-def plot_expected_tvalue_vs_edges(ax, data):
-    n_value = int(data['n_value'])
-    no_of_tests = int(data['no_of_tests'])
-    max_t_value = 3
-
-    for i in range(no_of_tests):
-        key = str(i)
-        t_value = int(data[key]['t_value'])
-        if t_value % 2 == 0:
-            t_value -= 1
-        max_t_value = max(t_value, max_t_value)
-
-    t_values = list(range(3, max_t_value + 1, 1))
-    lower_bound = [lower_bound_spanner_edges(n_value, t_value) for t_value in t_values]
-    upper_bound = [upper_bound_spanner_edges(n_value, t_value) for t_value in t_values]
-
-    ax.plot(t_values, lower_bound, label='Lower bound of Spanner Edges')
-    #ax.plot(t_values, upper_bound, label='Upper bound of Spanner Edges')
 
 def plot_tvalue_vs_field(field, ax, path):
     f = open(path)
@@ -79,12 +52,11 @@ fig, ax = plt.subplots()
 n_value = 0
 data = {}
 for path in paths:
-    data = plot_tvalue_vs_field('total_edges', ax, path)
+    #data = plot_tvalue_vs_field('spanner_max_path_len', ax, path)
+    data = plot_tvalue_vs_field('phase2_cluster_count', ax, path)
     n_value = int(data['n_value'])
 
-plot_expected_tvalue_vs_edges(ax, data)
-
-ax.set_title(f"T value vs Spanner Edges for {n_value} node graphs")
+ax.set_title(f"T value vs Graph Stats for {n_value} node graphs")
 ax.set_xlabel("T value")
 ax.set_ylabel("Spanner Edges")
 

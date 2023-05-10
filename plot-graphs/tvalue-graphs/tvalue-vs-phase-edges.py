@@ -5,44 +5,30 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_expected_tvalue_vs_complexity(ax, data):
-    graph_edges = defaultdict(float)
-    no_of_tests = int(data['no_of_tests'])
-    tests_per_t = int(data['tests_per_t'])
-
-    for i in range(no_of_tests):
-        key = str(i)
-        #print(f"key: {key}")
-        t_value = data[key]['t_value']
-        original_edges = int(data[key]['original_edges'])
-        graph_edges[t_value] += original_edges
-
-    for key, value in graph_edges.items():
-        graph_edges[key] = value/tests_per_t
-
-    keys = list(graph_edges.keys())
-    expected_time = [((t_value + 1)/2) * num_edges for t_value, num_edges in graph_edges.items()]
-    ax.plot(keys, expected_time, label='Expected time to Construct the T-spanner')
-
 def plot_tvalue_vs_field(field, ax, path):
     f = open(path)
     data = json.load(f)
     no_of_tests = int(data['no_of_tests'])
     tests_per_t = int(data['tests_per_t'])
     field_values = defaultdict(float)
+    freq_t_value = defaultdict(int)
 
     impl_name = os.path.basename(data['impl'])
 
     # aggregating values over t-value
     for i in range(no_of_tests):
         key = str(i)
-        t_value = data[key]['t_value']
+
+        t_value = int(data[key]['t_value'])
+        if t_value % 2 == 0:
+            t_value -= 1
+        freq_t_value[t_value] += 1
         field_value = float(data[key][field])
         field_values[t_value] += field_value
 
     # averaging over all tests for each t-value
     for key, value in field_values.items():
-        field_values[key] = value/tests_per_t
+        field_values[key] = value/freq_t_value[key]
 
     x_values = list(field_values.keys())
     y_values = list(field_values.values())

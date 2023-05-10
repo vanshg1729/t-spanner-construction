@@ -29,21 +29,22 @@ def plot_nvalue_vs_field(field, ax, path):
     f = open(path)
     data = json.load(f)
     no_of_tests = int(data['no_of_tests'])
-    tests_per_n = int(data['tests_per_n'])
     field_values = defaultdict(float)
+    freq_n_value = defaultdict(int)
 
     impl_name = os.path.basename(data['impl'])
 
-    # aggregating values over t-value
+    # aggregating values over n-value
     for i in range(no_of_tests):
         key = str(i)
         n_value = int(data[key]['n_value'])
+        freq_n_value[n_value] += 1
         field_value = float(data[key][field])
         field_values[n_value] += field_value
 
-    # averaging over all tests for each t-value
+    # averaging over all tests for each n-value
     for key, value in field_values.items():
-        field_values[key] = value/tests_per_n
+        field_values[key] = value/freq_n_value[key]
 
     x_values = sorted(list(field_values.keys()))
     y_values = [field_values[x] for x in x_values]

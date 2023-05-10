@@ -5,31 +5,6 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 
-def get_k_value(t_value):
-    return (t_value + 1)/2.0
-
-def plot_expected_nvalue_vs_complexity(ax, data):
-    graph_edges = defaultdict(float)
-    freq_n_value = defaultdict(int)
-    no_of_tests = int(data['no_of_tests'])
-    tests_per_n = int(data['tests_per_n'])
-    t_value = int(data['t_value'])
-
-    for i in range(no_of_tests):
-        key = str(i)
-        #print(f"key: {key}")
-        n_value = int(data[key]['n_value'])
-        original_edges = int(data[key]['original_edges'])
-        freq_n_value[n_value] += 1
-        graph_edges[n_value] += original_edges
-
-    for key, value in graph_edges.items():
-        graph_edges[key] = value/freq_n_value[key]
-
-    n_values = sorted(list(graph_edges.keys()))
-    expected_time = [get_k_value(t_value) * graph_edges[n] for n in n_values]
-    ax.plot(n_values, expected_time, label=f'Expected time to Construct T = {t_value} spanner')
-
 def plot_nvalue_vs_field(field, ax, path):
     f = open(path)
     data = json.load(f)
@@ -73,13 +48,12 @@ fig, ax = plt.subplots()
 data = {}
 t_value = 0
 for path in paths:
-    data = plot_nvalue_vs_field('total_time', ax, path)
+    data = plot_nvalue_vs_field('phase2_cluster_count', ax, path)
     t_value = int(data['t_value'])
 
-#plot_expected_nvalue_vs_complexity(ax, data)
-ax.set_title(f"No of Nodes (N) vs Time to create t = {t_value} spanner (ms)")
+ax.set_title(f"No of Nodes (N) vs cluster count for t = {t_value} spanner")
 ax.set_xlabel("N value")
-ax.set_ylabel("Time (ms)")
+ax.set_ylabel("Number of Clusters after Phase 1")
 
 ax.legend()
 
