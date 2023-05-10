@@ -208,6 +208,8 @@ def multiTest(impl: str, generator: str, no_of_nodes: int, t_value: int, no_of_t
 
 @app.command()
 def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=3, tend=100, tinc=10, checker_args=""):
+    pid = os.getpid()
+    print(f"pid of process : {pid}")
     tstart = max(3, int(tstart))
     tend = int(tend)
     tinc = int(tinc)
@@ -234,6 +236,13 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
     input_dir = dir_name + "in" + "/"
     output_dir = dir_name + "out" + "/"
     checker_dir = dir_name + "check" + "/"
+
+    info["dir_name"] = dir_name
+    info["input_dir"] = input_dir
+    info["output_dir"] = output_dir
+    info["checker_dir"] = checker_dir
+    print(json.dumps(info, indent=4))
+
     os.system("mkdir " + dir_name)
     os.system(f"mkdir {input_dir}")
     os.system(f"mkdir {output_dir}")
@@ -317,6 +326,8 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
 
 @app.command()
 def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, nend=100, ninc=10, checker_args=""):
+    pid = os.getpid()
+    print(f"pid of process : {pid}")
     nstart = max(3, int(nstart))
     nend = int(nend)
     ninc = int(ninc)
@@ -344,6 +355,13 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
     input_dir = dir_name + "in" + "/"
     output_dir = dir_name + "out" + "/"
     checker_dir = dir_name + "check" + "/"
+
+    info["dir_name"] = dir_name
+    info["input_dir"] = input_dir
+    info["output_dir"] = output_dir
+    info["checker_dir"] = checker_dir
+    print(json.dumps(info, indent=4))
+
     os.system("mkdir " + dir_name)
     os.system(f"mkdir {input_dir}")
     os.system(f"mkdir {output_dir}")
@@ -422,6 +440,8 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
 
 @app.command()
 def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=100, tinc=10, checker_args=""):
+    pid = os.getpid()
+    print(f"pid of process: {pid}")
     tstart = max(3, int(tstart))
     tend = int(tend)
     tinc = int(tinc)
@@ -447,6 +467,13 @@ def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=1
     output_dir = dir_name + "out" + "/"
     checker_dir = dir_name + "check" + "/"
     test_dataset_path = dir_name + "dataset" + "/"
+
+    info["dir_name"] = dir_name
+    info["output_dir"] = output_dir
+    info["checker_dir"] = checker_dir
+    info["test_dataset_path"] = test_dataset_path
+    print(json.dumps(info, indent=4))
+
     os.system("mkdir " + dir_name)
     os.system(f"mkdir {test_dataset_path}")
     os.system(f"mkdir {output_dir}")
@@ -524,6 +551,8 @@ def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=1
 
 @app.command()
 def test_data(impl: str, dataset_path : str, t_value: int, checker_args=""):
+    pid = os.getpid()
+    print(f"pid of process: {pid}")
     test_number = math.floor(time.time()) - start_time
     info = {}
     info['cmd'] = 'test-data'
@@ -541,6 +570,13 @@ def test_data(impl: str, dataset_path : str, t_value: int, checker_args=""):
     output_dir = dir_name + "out" + "/"
     checker_dir = dir_name + "check" + "/"
     test_dataset_path = dir_name + "dataset" + "/"
+
+    info["dir_name"] = dir_name
+    info["output_dir"] = output_dir
+    info["checker_dir"] = checker_dir
+    info["test_dataset_path"] = test_dataset_path
+    print(json.dumps(info, indent=4))
+
     os.system("mkdir " + dir_name)
     os.system(f"mkdir {test_dataset_path}")
     os.system(f"mkdir {output_dir}")
@@ -565,6 +601,8 @@ def test_data(impl: str, dataset_path : str, t_value: int, checker_args=""):
     for filepath in os.listdir(test_dataset_path):
         if filepath.endswith(".txt"):
             testcase_filepaths.append(filepath)
+            size = len(testcase_filepaths)
+            print(f"Listing #{size} file, path: {filepath}")
 
     n_values = []
     n_values_raw = []
