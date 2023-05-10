@@ -1,0 +1,10 @@
+{
+    435681 : "cluster-cluster",
+    435784 : "non-random-tspan",
+    481604 : "t-spanner",
+    482526 : "non-random-cluster-cluster",
+    482876 : "map-t-spanner",
+    483008 : "3-spanner",
+    483227 : "map-3-spanner",
+    491550 : "ll-3-spanner"
+}
