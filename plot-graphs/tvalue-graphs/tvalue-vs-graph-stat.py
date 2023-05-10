@@ -9,7 +9,6 @@ def plot_tvalue_vs_field(field, ax, path):
     f = open(path)
     data = json.load(f)
     no_of_tests = int(data['no_of_tests'])
-    tests_per_t = int(data['tests_per_t'])
     field_values = defaultdict(float)
     freq_t_value = defaultdict(int)
 
