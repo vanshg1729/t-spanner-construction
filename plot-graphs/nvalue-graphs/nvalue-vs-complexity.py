@@ -8,6 +8,8 @@ import numpy as np
 def get_k_value(t_value):
     return (t_value + 1)/2.0
 
+small_constant = (1e-2) * 0.07
+
 def plot_expected_nvalue_vs_complexity(ax, data):
     graph_edges = defaultdict(float)
     freq_n_value = defaultdict(int)
@@ -27,7 +29,7 @@ def plot_expected_nvalue_vs_complexity(ax, data):
         graph_edges[key] = value/freq_n_value[key]
 
     n_values = sorted(list(graph_edges.keys()))
-    expected_time = [get_k_value(t_value) * graph_edges[n] for n in n_values]
+    expected_time = [small_constant * get_k_value(t_value) * graph_edges[n] for n in n_values]
     ax.plot(n_values, expected_time, label=f'Expected time to Construct T = {t_value} spanner')
 
 def plot_nvalue_vs_field(field, ax, path):
