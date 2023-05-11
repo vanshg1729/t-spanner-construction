@@ -208,6 +208,9 @@ def multiTest(impl: str, generator: str, no_of_nodes: int, t_value: int, no_of_t
 
 @app.command()
 def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=3, tend=100, tinc=10, checker_args=""):
+    """
+    Test a particular implementation with a particular number of nodes and different t values
+    """
     pid = os.getpid()
     print(f"pid of process : {pid}")
     tstart = max(3, int(tstart))
@@ -326,6 +329,9 @@ def ttest(impl: str, generator: str, no_of_nodes: int, no_of_tests: int, tstart=
 
 @app.command()
 def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, nend=100, ninc=10, checker_args=""):
+    """
+    Test a particular implementation on a single t_value with different n values
+    """
     pid = os.getpid()
     print(f"pid of process : {pid}")
     nstart = max(3, int(nstart))
@@ -440,6 +446,9 @@ def ntest(impl: str, generator: str, t_value: int, no_of_tests: int, nstart=3, n
 
 @app.command()
 def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=100, tinc=10, checker_args=""):
+    """
+    Test an implementation on a dataset with different t-values
+    """
     pid = os.getpid()
     print(f"pid of process: {pid}")
     tstart = max(3, int(tstart))
@@ -551,6 +560,9 @@ def ttest_data(impl: str, dataset_path : str, no_of_nodes: int, tstart=3, tend=1
 
 @app.command()
 def test_data(impl: str, dataset_path : str, t_value: int, checker_args=""):
+    """
+    Test an implementation on a dataset with a particular t-value
+    """
     pid = os.getpid()
     print(f"pid of process: {pid}")
     test_number = math.floor(time.time()) - start_time
