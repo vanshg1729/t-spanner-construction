@@ -1,6 +1,14 @@
 # t-spanner-construction
 Implementing and analysing the t-spanner construction algorithm by Baswana and Sen
 
+## Clone
+To clone the repository, run the command:
+
+```
+git clone https://github.com/fine-man/t-spanner-construction.git
+```
+- [Link to the repository](https://github.com/fine-man/t-spanner-construction)
+
 ## Setup
 
 We need a few python packages to run the test-suite. Run the following:
