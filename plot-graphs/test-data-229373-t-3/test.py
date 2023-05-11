@@ -1,0 +1,127 @@
+import sys
+import os
+from collections import defaultdict, OrderedDict
+import json
+import matplotlib.pyplot as plt
+import numpy as np
+
+def get_k_value(t_value):
+    return (t_value + 1)/2.0
+
+#small_constant = (1e-2) * 0.07
+
+def plot_expected_nvalue_vs_complexity(ax, data):
+    graph_edges = defaultdict(float)
+    freq_n_value = defaultdict(int)
+    no_of_tests = int(data['no_of_tests'])
+    t_value = int(data['t_value'])
+
+    for i in range(no_of_tests):
+        key = str(i)
+        #print(f"key: {key}")
+        n_value = int(data[key]['n_value'])
+        original_edges = int(data[key]['original_edges'])
+        freq_n_value[n_value] += 1
+        graph_edges[n_value] += original_edges
+
+    for key, value in graph_edges.items():
+        graph_edges[key] = value/freq_n_value[key]
+
+    n_values = sorted(list(graph_edges.keys()))
+    expected_time = [get_k_value(t_value) * graph_edges[n] for n in n_values]
+    ax.plot(n_values, expected_time, label=f'Expected time to Construct T = {t_value} spanner')
+
+def plot_nvalue_vs_complexity(ax, path, field='total_time'):
+    f = open(path)
+    data = json.load(f)
+    no_of_tests = int(data['no_of_tests'])
+    t_value = int(data['t_value'])
+    field_values = defaultdict(float)
+    graph_edges = defaultdict(float)
+    freq_n_value = defaultdict(int)
+
+    impl_name = os.path.basename(data['impl'])
+
+    # aggregating values over n-value
+    for i in range(no_of_tests):
+        key = str(i)
+        n_value = int(data[key]['n_value'])
+        original_edges = int(data[key]['original_edges'])
+        field_value = float(data[key][field])
+
+        freq_n_value[n_value] += 1
+        field_values[n_value] += field_value
+        graph_edges[n_value] += original_edges
+
+    # averaging over all tests for each n-value
+    for key, value in field_values.items():
+        field_values[key] = value/freq_n_value[key]
+
+    for key, value in graph_edges.items():
+        graph_edges[key] = get_k_value(t_value) * value/freq_n_value[key]
+
+    x_values = sorted(list(field_values.keys()))
+    y_values = [field_values[x]/graph_edges[x] for x in x_values]
+
+    is_time_field = True if ("time" in field) else False
+    label = f'{field} using {impl_name}'
+    if is_time_field:
+        label += " (ms)"
+
+    ax.plot(x_values, y_values, label=label)
+    return data
+
+def plot_nvalue_vs_field(field, ax, path):
+    f = open(path)
+    data = json.load(f)
+    no_of_tests = int(data['no_of_tests'])
+    field_values = defaultdict(float)
+    freq_n_value = defaultdict(int)
+
+    impl_name = os.path.basename(data['impl'])
+
+    # aggregating values over n-value
+    for i in range(no_of_tests):
+        key = str(i)
+        n_value = int(data[key]['n_value'])
+        freq_n_value[n_value] += 1
+        field_value = float(data[key][field])
+        field_values[n_value] += field_value
+
+    # averaging over all tests for each n-value
+    for key, value in field_values.items():
+        field_values[key] = value/freq_n_value[key]
+
+    x_values = sorted(list(field_values.keys()))
+    y_values = [field_values[x] for x in x_values]
+
+    is_time_field = True if ("time" in field) else False
+    label = f'{field} using {impl_name}'
+    if is_time_field:
+        label += " (ms)"
+
+    ax.plot(x_values, y_values, label=label)
+    return data
+
+paths = []
+if len(sys.argv) >= 2:
+    paths = sys.argv[1:]
+else:
+    exit()
+
+fig, ax = plt.subplots()
+
+data = {}
+t_value = 0
+for path in paths:
+    data = plot_nvalue_vs_complexity(ax, path)
+    t_value = int(data['t_value'])
+
+#plot_expected_nvalue_vs_complexity(ax, data)
+ax.set_title(f"No of Nodes (N) vs Time to create t = {t_value} spanner (ms)")
+ax.set_xlabel("N value")
+ax.set_ylabel("Time (ms)")
+
+ax.legend()
+
+plt.show()

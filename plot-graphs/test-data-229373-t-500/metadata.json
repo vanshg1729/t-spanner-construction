@@ -2,7 +2,7 @@
     504621 : "t-spanner",
     504626 : "cluster-cluster",
     504631 : "map-t-spanner",
-    504636 : "non-random-t-spanner",
     504641 : "non-random-cluster-cluster",
-    511486 : "ll-t-spanner"
+    511486 : "ll-t-spanner",
+    572824 : "non-random-t-spanner"
 }
