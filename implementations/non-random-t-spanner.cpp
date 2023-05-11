@@ -35,7 +35,7 @@ void choose_cluster_centers(vector<int>& original_cluster_centers, vector<int>& 
     double probability = 1.0 / (pow(1.0 * n, 1.0/k));
     double expected_centers = original_cluster_centers.size() * probability;
     for(int i = 0; i < original_cluster_centers.size(); i++){
-        if(i > expected_centers +  1){
+        if(i >= max(1.0, floor(expected_centers))){
             break;
         }
         new_cluster_centers.push_back(original_cluster_centers[i]);
@@ -369,4 +369,5 @@ int main(int argc, char *argv[]) {
     cout << phase1_time.count() << "\n";
     cout << phase2_time.count() << "\n";
     cout << total_time.count() << "\n";
+    cout << phase2_cluster_count << "\n";
 }
