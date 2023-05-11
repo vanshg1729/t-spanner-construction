@@ -369,4 +369,5 @@ int main(int argc, char *argv[]) {
     cout << phase1_time.count() << "\n";
     cout << phase2_time.count() << "\n";
     cout << total_time.count() << "\n";
+    cout << phase2_cluster_count << "\n";
 }
