@@ -52,7 +52,12 @@ int main(int argc, char *argv[]) {
     int phase_one_edge_count = 0;
     int phase_two_edge_count = 0;
     int phase2_cluster_count = 0;
+
     duration<double, std::milli> choose_cluster_time = {};
+
+    duration<double, std::milli> phase1_step_time[5] = {};
+    std::chrono::high_resolution_clock::time_point phase1_step_start[5] = {};
+    std::chrono::high_resolution_clock::time_point phase1_step_end[5] = {};
 
     vector<tuple<int, int, int>> spanner_edges = {};
 
@@ -87,6 +92,7 @@ int main(int argc, char *argv[]) {
         cluster_edges[idx].clear();
         
         // Start of Step 1: Forming a sample of Clusters
+        phase1_step_start[1] = high_resolution_clock::now();
 
         // sampling the cluster centers with probability (n^(-1/k))
         auto choose_cluster_start = high_resolution_clock::now();
@@ -113,8 +119,11 @@ int main(int argc, char *argv[]) {
             }
         }
         // End of Step 1
+        phase1_step_end[1] = high_resolution_clock::now();
+        phase1_step_time[1] += phase1_step_end[1] - phase1_step_start[1];
         
         // Start of Step 2: Finding nearest neighboring sampled cluster for each vertex
+        phase1_step_start[2] = high_resolution_clock::now();
 
         // finding closter cluster neighbor for each node that
         // does not belong to any sampled cluster
@@ -139,8 +148,11 @@ int main(int argc, char *argv[]) {
                 }
             }
             // End of Step 2
+            phase1_step_end[2] = high_resolution_clock::now();
+            phase1_step_time[2] = phase1_step_end[2] - phase1_step_start[2];
 
             // Start of Step 3: Adding edges to spanner
+            phase1_step_start[3] = high_resolution_clock::now();
 
             // if node is not adjacent to any sampled cluster,
             // then add smallest edge from node to all the old non-sampled
@@ -243,8 +255,11 @@ int main(int argc, char *argv[]) {
             for (auto edge : delete_edges) adj[i].erase(edge);
         }
         // End of Step 3
+        phase1_step_end[3] = high_resolution_clock::now();
+        phase1_step_time[3] = phase1_step_end[3] - phase1_step_start[3];
 
         // Start of Step 4: Removing intra-cluster edges
+        phase1_step_start[4] = high_resolution_clock::now();
 
         for (int i = 1; i <= n; i++) {
             if (is_cluster[i]) continue;
@@ -269,6 +284,10 @@ int main(int argc, char *argv[]) {
             // delete the intra cluster edge from the graph
             for (auto edge : intra_cluster_edges) adj[i].erase(edge);
         }
+
+        // End Step 4
+        phase1_step_end[4] = high_resolution_clock::now();
+        phase1_step_time[4] += phase1_step_end[4] - phase1_step_start[4];
     }
     
     // End of Phase 1
@@ -344,4 +363,8 @@ int main(int argc, char *argv[]) {
     cout << total_time.count() << "\n";
     cout << phase2_cluster_count << "\n";
     cout << "Choose Cluster time: " << choose_cluster_time.count() << "\n";
+
+    for (int i = 1; i <= 4; i++) {
+        cout << "Phase 1 step " << i << " time: " << phase1_step_time[i].count() << "\n";
+    }
 }
