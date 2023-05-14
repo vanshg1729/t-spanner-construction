@@ -74,10 +74,13 @@ int main(int argc, char *argv[]) {
     // Phase 1: Cluster formation
 
     // initializing C_0
+    phase1_step_start[0] = high_resolution_clock::now();
     for (int i = 1; i <= n; i++) {
         cluster[i] = i;
         cluster_centers[0].push_back(i);
     }
+    phase1_step_end[0] = high_resolution_clock::now();
+    phase1_step_time[0] = phase1_step_end[0] - phase1_step_start[0];
 
     int iter;
     for (iter = 1; iter < k; iter++) {
@@ -364,7 +367,7 @@ int main(int argc, char *argv[]) {
     cout << phase2_cluster_count << "\n";
     cout << "Choose Cluster time: " << choose_cluster_time.count() << "\n";
 
-    for (int i = 1; i <= 4; i++) {
+    for (int i = 0; i <= 4; i++) {
         cout << "Phase 1 step " << i << " time: " << phase1_step_time[i].count() << "\n";
     }
 }
