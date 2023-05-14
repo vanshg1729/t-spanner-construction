@@ -159,12 +159,12 @@ int main(int argc, char *argv[]) {
         phase1_step_time[1] += phase1_step_end[1] - phase1_step_start[1];
         
         // Start of Step 2: Finding nearest neighboring sampled cluster for each vertex
-        phase1_step_start[2] = high_resolution_clock::now();
 
         // finding closter cluster neighbor for each node that
         // does not belong to any sampled cluster
         for (int i = 1; i <= n; i++) {
             // if parent cluster of i is sampled cluster -> continue
+            phase1_step_start[2] = high_resolution_clock::now();
             if (is_cluster[cluster[i]]) continue;
 
             int adjacent_cluster = false;
@@ -397,9 +397,11 @@ int main(int argc, char *argv[]) {
     cout << phase2_time.count() << "\n";
     cout << total_time.count() << "\n";
     cout << phase2_cluster_count << "\n";
+    /*
     cout << "Choose Cluster time: " << choose_cluster_time.count() << "\n";
 
     for (int i = 0; i <= 4; i++) {
         cout << "Phase 1 step " << i << " time: " << phase1_step_time[i].count() << "\n";
     }
+    */
 }
