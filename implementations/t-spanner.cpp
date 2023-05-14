@@ -52,6 +52,7 @@ int main(int argc, char *argv[]) {
     int phase_one_edge_count = 0;
     int phase_two_edge_count = 0;
     int phase2_cluster_count = 0;
+    duration<double, std::milli> choose_cluster_time = {};
 
     vector<tuple<int, int, int>> spanner_edges = {};
 
@@ -88,12 +89,15 @@ int main(int argc, char *argv[]) {
         // Start of Step 1: Forming a sample of Clusters
 
         // sampling the cluster centers with probability (n^(-1/k))
+        auto choose_cluster_start = high_resolution_clock::now();
         for (auto u : cluster_centers[p_idx]) {
             if (choose_node(n, k)) {
                 is_cluster[u] = 1;
                 cluster_centers[idx].push_back(u);
             }
         }
+        auto choose_cluster_end = high_resolution_clock::now();
+        choose_cluster_time += choose_cluster_end - choose_cluster_start;
 
         // adding cluster edges from (E_(i-1)) to E_i
         for (auto edge : cluster_edges[p_idx]) {
@@ -339,4 +343,5 @@ int main(int argc, char *argv[]) {
     cout << phase2_time.count() << "\n";
     cout << total_time.count() << "\n";
     cout << phase2_cluster_count << "\n";
+    cout << "Choose Cluster time: " << choose_cluster_time.count() << "\n";
 }
