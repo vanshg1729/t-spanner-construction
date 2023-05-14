@@ -69,7 +69,7 @@ data = {}
 t_value = 0
 for path in paths:
     data = plot_nvalue_vs_field('phase1_time', ax, path)
-    plot_nvalue_vs_field('phase2_time', ax, path)
+    #plot_nvalue_vs_field('phase2_time', ax, path)
     t_value = int(data['t_value'])
 
 #plot_expected_nvalue_vs_complexity(ax, data)
