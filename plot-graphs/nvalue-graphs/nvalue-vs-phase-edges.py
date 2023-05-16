@@ -75,7 +75,7 @@ data = {}
 t_value = 0
 for path in paths:
     data = plot_nvalue_vs_field('phase1_edge_count', ax, path)
-    plot_nvalue_vs_field('phase2_edge_count', ax, path)
+    #plot_nvalue_vs_field('phase2_edge_count', ax, path)
     t_value = int(data['t_value'])
 
 #plot_expected_nvalue_vs_edges(ax, data)
